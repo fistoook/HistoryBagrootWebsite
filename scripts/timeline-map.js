@@ -163,21 +163,34 @@ class EuropeTimelineMap {
     // Add SVG to container
     this.container.appendChild(svg);
 
-    // Add info panel
-    const infoPanel = document.createElement('div');
-    infoPanel.className = 'map-info-panel';
-    infoPanel.id = 'stationInfo';
-    infoPanel.innerHTML = `
-      <div class="station-info-content">
-        <h2 id="stationTitle">בחרו תחנה</h2>
-        <p id="stationDate" class="station-date"></p>
-        <p id="stationDescription" class="station-description"></p>
-        <div id="stationKeyPoints" class="station-key-points"></div>
-        <button id="completeButton" class="complete-button" style="display: none;">סיימתי את התחנה</button>
-        <p id="stationStatus" class="station-status"></p>
+    // Add modal for station info and quiz
+    const modal = document.createElement('div');
+    modal.className = 'station-modal';
+    modal.id = 'stationModal';
+    modal.innerHTML = `
+      <div class="modal-overlay" id="modalOverlay"></div>
+      <div class="modal-content">
+        <button class="modal-close" id="modalClose">×</button>
+        <div class="modal-body">
+          <h2 id="modalTitle" class="modal-title"></h2>
+          <p id="modalDate" class="modal-date"></p>
+          <p id="modalDescription" class="modal-description"></p>
+          <div id="modalKeyPoints" class="modal-key-points"></div>
+          
+          <div id="quizSection" class="quiz-section">
+            <h3 class="quiz-title">שאלת ביקורת</h3>
+            <p id="quizQuestion" class="quiz-question"></p>
+            <div id="quizOptions" class="quiz-options"></div>
+            <p id="quizFeedback" class="quiz-feedback"></p>
+          </div>
+        </div>
       </div>
     `;
-    this.container.appendChild(infoPanel);
+    this.container.appendChild(modal);
+
+    // Add modal event listeners
+    modal.querySelector('#modalClose').addEventListener('click', () => this.closeModal());
+    modal.querySelector('#modalOverlay').addEventListener('click', () => this.closeModal());
   }
 
   projectCoords(lat, lon, stationId) {
@@ -301,17 +314,33 @@ class EuropeTimelineMap {
         stationGroup.appendChild(pulse);
       }
 
-      // Station number
-      const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-      text.setAttribute('x', proj.x);
-      text.setAttribute('y', proj.y + 0.25);
-      text.setAttribute('text-anchor', 'middle');
-      text.setAttribute('font-size', '0.6');
-      text.setAttribute('font-weight', 'bold');
-      text.setAttribute('fill', isLocked ? '#999' : 'white');
-      text.setAttribute('pointer-events', 'none');
-      text.textContent = station.id;
-      stationGroup.appendChild(text);
+      // Station number or checkmark for completed
+      if (isCompleted) {
+        // Add checkmark for completed stations
+        const checkmark = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        checkmark.setAttribute('x', proj.x);
+        checkmark.setAttribute('y', proj.y + 0.4);
+        checkmark.setAttribute('text-anchor', 'middle');
+        checkmark.setAttribute('font-size', '1.2');
+        checkmark.setAttribute('font-weight', 'bold');
+        checkmark.setAttribute('fill', 'white');
+        checkmark.setAttribute('pointer-events', 'none');
+        checkmark.setAttribute('class', 'station-checkmark');
+        checkmark.textContent = '✓';
+        stationGroup.appendChild(checkmark);
+      } else {
+        // Station number for non-completed stations
+        const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        text.setAttribute('x', proj.x);
+        text.setAttribute('y', proj.y + 0.25);
+        text.setAttribute('text-anchor', 'middle');
+        text.setAttribute('font-size', '0.6');
+        text.setAttribute('font-weight', 'bold');
+        text.setAttribute('fill', isLocked ? '#999' : 'white');
+        text.setAttribute('pointer-events', 'none');
+        text.textContent = station.id;
+        stationGroup.appendChild(text);
+      }
 
       // Tooltip
       const title = document.createElementNS('http://www.w3.org/2000/svg', 'title');
@@ -336,13 +365,17 @@ class EuropeTimelineMap {
   }
 
   showStationInfo(station) {
-    const titleEl = document.getElementById('stationTitle');
-    const dateEl = document.getElementById('stationDate');
-    const descEl = document.getElementById('stationDescription');
-    const keyPointsEl = document.getElementById('stationKeyPoints');
-    const completeBtn = document.getElementById('completeButton');
-    const statusEl = document.getElementById('stationStatus');
+    const modal = document.getElementById('stationModal');
+    const titleEl = document.getElementById('modalTitle');
+    const dateEl = document.getElementById('modalDate');
+    const descEl = document.getElementById('modalDescription');
+    const keyPointsEl = document.getElementById('modalKeyPoints');
+    const quizSection = document.getElementById('quizSection');
+    const quizQuestion = document.getElementById('quizQuestion');
+    const quizOptions = document.getElementById('quizOptions');
+    const quizFeedback = document.getElementById('quizFeedback');
 
+    // Populate station info
     titleEl.textContent = station.title;
     dateEl.textContent = `${station.date} • ${station.location}`;
     descEl.textContent = station.description;
@@ -357,23 +390,88 @@ class EuropeTimelineMap {
     const isCompleted = this.completedStations.has(station.id);
     const isCurrent = this.currentStation === station.id;
 
-    if (isCurrent && !isCompleted) {
-      completeBtn.style.display = 'block';
-      completeBtn.onclick = () => this.completeStation(station.id);
-      statusEl.innerHTML = '<span class="status-unlock">👈 לחצו את הכפתור כדי לסיים התחנה ולהמשיך לתחנה הבאה</span>';
+    // Show quiz only if this is the current station and not yet completed
+    if (isCurrent && !isCompleted && station.quiz) {
+      quizSection.style.display = 'block';
+      quizQuestion.textContent = station.quiz.question;
+      quizFeedback.textContent = '';
+      quizFeedback.className = 'quiz-feedback';
+      
+      // Render quiz options
+      quizOptions.innerHTML = '';
+      station.quiz.options.forEach((option, index) => {
+        const optionBtn = document.createElement('button');
+        optionBtn.className = 'quiz-option';
+        optionBtn.textContent = option;
+        optionBtn.onclick = () => this.checkAnswer(station, index, optionBtn);
+        quizOptions.appendChild(optionBtn);
+      });
     } else if (isCompleted) {
-      completeBtn.style.display = 'none';
-      statusEl.innerHTML = '<span class="status-completed">✓ כבר ביקרתם בתחנה זו</span>';
+      quizSection.style.display = 'block';
+      quizQuestion.textContent = 'כבר ביקרתם בתחנה זו ✓';
+      quizOptions.innerHTML = '';
+      quizFeedback.textContent = 'תחנה זו הושלמה בהצלחה!';
+      quizFeedback.className = 'quiz-feedback success';
     } else {
-      completeBtn.style.display = 'none';
-      statusEl.innerHTML = '<span class="status-locked">🔒 יש צורך לשלים את התחנות הקודמות קודם</span>';
+      quizSection.style.display = 'none';
     }
 
-    // Scroll to info panel
-    document.getElementById('stationInfo').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    // Show modal
+    modal.classList.add('active');
+  }
+
+  closeModal() {
+    const modal = document.getElementById('stationModal');
+    modal.classList.remove('active');
+  }
+
+  checkAnswer(station, selectedIndex, selectedButton) {
+    const quizFeedback = document.getElementById('quizFeedback');
+    const quizOptions = document.getElementById('quizOptions');
+    const allButtons = quizOptions.querySelectorAll('.quiz-option');
+    
+    // Disable all buttons after answer
+    allButtons.forEach(btn => btn.disabled = true);
+    
+    if (selectedIndex === station.quiz.correctAnswer) {
+      selectedButton.classList.add('correct');
+      quizFeedback.textContent = 'כל הכבוד! תשובה נכונה ✓';
+      quizFeedback.className = 'quiz-feedback success';
+      
+      // Wait 1.5 seconds, then complete station and close modal
+      setTimeout(() => {
+        this.completeStation(station.id);
+        this.closeModal();
+      }, 1500);
+    } else {
+      selectedButton.classList.add('incorrect');
+      // Show correct answer
+      allButtons[station.quiz.correctAnswer].classList.add('correct');
+      quizFeedback.textContent = 'תשובה שגויה. נסו שוב לאחר קריאה נוספת של החומר.';
+      quizFeedback.className = 'quiz-feedback error';
+      
+      // Re-enable buttons after 2 seconds
+      setTimeout(() => {
+        allButtons.forEach(btn => {
+          btn.disabled = false;
+          btn.classList.remove('correct', 'incorrect');
+        });
+        quizFeedback.textContent = '';
+      }, 3000);
+    }
   }
 
   completeStation(stationId) {
+    // Find and animate the completed station
+    const stationMarker = document.querySelector(`.station-marker[data-id="${stationId}"]`);
+    if (stationMarker) {
+      stationMarker.classList.add('completing');
+      // Remove animation class after animation completes
+      setTimeout(() => {
+        stationMarker.classList.remove('completing');
+      }, 800);
+    }
+
     this.completedStations.add(stationId);
     localStorage.setItem('completedStations', JSON.stringify(Array.from(this.completedStations)));
 
