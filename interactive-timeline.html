@@ -2,93 +2,69 @@
 <html lang="he" dir="rtl">
 <head>
   <meta charset="UTF-8">
+  <meta http-equiv="refresh" content="0; url=timeline-map.html">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ציר זמן אינטראקטיבי - מעבדת היסטוריה</title>
-  <link rel="stylesheet" href="styles/style.css">
+  <title>מעבר למפת התחנות...</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      background: linear-gradient(135deg, #e8f5ef 0%, #d4e8df 100%);
+      margin: 0;
+      direction: rtl;
+      text-align: center;
+    }
+    .redirect-message {
+      background: white;
+      padding: 40px;
+      border-radius: 16px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      max-width: 500px;
+    }
+    .redirect-message h1 {
+      color: #2d7a5e;
+      margin-bottom: 15px;
+    }
+    .redirect-message p {
+      color: #666;
+      line-height: 1.6;
+      margin-bottom: 20px;
+    }
+    .spinner {
+      display: inline-block;
+      width: 40px;
+      height: 40px;
+      border: 4px solid #d0e8dc;
+      border-top-color: #2d7a5e;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    a {
+      color: #2d7a5e;
+      text-decoration: none;
+      font-weight: 600;
+    }
+  </style>
 </head>
-
-<body dir="rtl">
-  <header class="main-header">
-    <div class="header-container">
-      <nav class="main-nav">
-        <ul>
-          <li><a href="index.html">בית</a></li>
-          <li><a href="interactive-timeline.html" class="active">ציר זמן אינטראקטיבי</a></li>
-          <li><a href="timeline-map.html">מפת התחנות</a></li>
-          <li><a href="topics.html">נושאים לפי פרקים</a></li>
-          <li><a href="quizzes.html">חידונים</a></li>
-          <li><a href="study-materials.html">חומרי לימוד</a></li>
-          <li><a href="about.html">אודות</a></li>
-        </ul>
-      </nav>
-      <a href="index.html" class="logo-link">
-        <img src="images/pazthehistorybagroot-high-resolution-logo-transparent.png" alt="PaztheHistoryBagroot" class="header-logo">
-      </a>
-    </div>
-  </header>
-
-  <main>
-    <section class="page-header">
-      <div class="container">
-        <h1>ציר זמן אינטראקטיבי לפי תכנית הבגרות</h1>
-        <p>בחרו תקופה או פרק והתקדמו בין תחנות לימוד מרכזיות: נאציזם, מלחמה ושואה.</p>
-      </div>
-    </section>
-
-    <section class="container">
-      <div class="timeline-controls">
-        <label for="timeline-filter">סינון לפי פרק:</label>
-        <select id="timeline-filter">
-          <option value="all">הכל</option>
-          <option value="1918-1939">מיעוטים בין שתי מלחמות</option>
-          <option value="totalitarian">משטר טוטליטרי</option>
-          <option value="1933-1939">נאציזם ועליית הנאצים (1933-1939)</option>
-          <option value="1939-1941">ראשית המלחמה (1939-1941)</option>
-          <option value="1941-1945">המלחמה העולמית והפתרון הסופי (1941-1945)</option>
-          <option value="post-1945">סיום המלחמה ושארית הפליטה</option>
-        </select>
-      </div>
-
-      <div class="timeline-container">
-        <div class="timeline" id="timeline">
-          <!-- Timeline items will be inserted here by JavaScript -->
-        </div>
-      </div>
-
-      <div class="event-detail" id="event-detail" style="display: none;">
-        <div class="event-detail-content">
-          <button class="close-detail" onclick="closeEventDetail()">&times;</button>
-          <h3 id="detail-title"></h3>
-          <p class="detail-date" id="detail-date"></p>
-          <p id="detail-description"></p>
-          <div id="detail-key-points"></div>
-        </div>
-      </div>
-
-      <div class="map-section">
-        <h2>ציר הזמן האינטראקטיבי - התחנות המרכזיות</h2>
-        <p>עברו דרך כל התחנות לפי הסדר. קרא אודות כל תחנה לפני שתוכלו להמשיך לתחנה הבאה.</p>
-        <div class="map-container">
-          <div class="map-wrapper" id="mapWrapper">
-            <svg class="map-overlay" viewBox="0 0 1000 700" preserveAspectRatio="xMidYMid meet" id="mapSvg">
-              <!-- Map background - will be styled -->
-            </svg>
-          </div>
-          <div class="stations-container" id="stationsContainer">
-            <!-- Stations will be generated here by JavaScript -->
-          </div>
-        </div>
-      </div>
-    </section>
-  </main>
-
-  <footer>
-    <div class="container">
-      <p>&copy; 2026 מעבדת היסטוריה. נבנה כדי לעזור לתלמידים להצליח בבגרות בהיסטוריה.</p>
-    </div>
-  </footer>
-
-  <script src="scripts/timeline-data.js"></script>
-  <script src="scripts/interactive-timeline.js"></script>
+<body>
+  <div class="redirect-message">
+    <h1>🗺️ שדרגנו את חווית הלמידה!</h1>
+    <p>ציר הזמן האינטראקטיבי הפך למפת תחנות אינטראקטיבית עם חידונים ואנימציות!</p>
+    <div class="spinner"></div>
+    <p style="margin-top: 20px;">מעבירים אותך למפת התחנות החדשה...</p>
+    <p style="font-size: 0.9em;"><a href="timeline-map.html">לחצו כאן אם לא הועברתם אוטומטית</a></p>
+  </div>
+  <script>
+    // Redirect after 2 seconds to allow users to read the message
+    setTimeout(() => {
+      window.location.href = 'timeline-map.html';
+    }, 2000);
+  </script>
 </body>
 </html>

@@ -366,6 +366,44 @@ body {
   transform: translateY(-5px);
 }
 
+.feature-card.featured {
+  background: linear-gradient(135deg, #f0f8f4 0%, #e8f5ef 100%);
+  border: 3px solid var(--primary-color);
+  box-shadow: 0 8px 20px rgba(74, 157, 111, 0.2);
+  position: relative;
+  overflow: hidden;
+}
+
+.feature-card.featured::before {
+  content: '⭐ המלצת האתר';
+  position: absolute;
+  top: 15px;
+  right: -30px;
+  background: linear-gradient(135deg, #2d7a5e 0%, #4a9d6f 100%);
+  color: white;
+  padding: 5px 40px;
+  font-size: 0.85em;
+  font-weight: bold;
+  transform: rotate(45deg);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.feature-card.featured:hover {
+  border-color: var(--accent-color);
+  box-shadow: 0 12px 30px rgba(74, 157, 111, 0.3);
+  transform: translateY(-8px) scale(1.02);
+}
+
+.feature-card.featured .feature-icon {
+  font-size: 3.5em;
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+}
+
 .feature-icon {
   font-size: 3em;
   margin-bottom: 15px;
