@@ -178,6 +178,7 @@ body {
   width: 150px;
   height: 150px;
   object-fit: cover;
+  object-position: center top;
   border-radius: 50%;
   margin: 0 auto 15px auto;
   display: block;
