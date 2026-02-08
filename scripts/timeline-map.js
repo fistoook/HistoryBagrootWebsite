@@ -21,64 +21,147 @@ class EuropeTimelineMap {
   }
 
   createMapStructure() {
-    this.container.innerHTML = `
-      <div class="map-legend">
-        <h3>מפת התחנות - ציר הזמן המלא</h3>
-        <div class="legend-items">
-          <div class="legend-item">
-            <span class="legend-marker locked"></span>
-            <span>תחנה נעולה</span>
-          </div>
-          <div class="legend-item">
-            <span class="legend-marker current"></span>
-            <span>התחנה הנוכחית</span>
-          </div>
-          <div class="legend-item">
-            <span class="legend-marker completed"></span>
-            <span>תחנה שביקרתם בה</span>
-          </div>
+    if (!this.container) {
+      console.error('Map container not found!');
+      return;
+    }
+
+    // Clear container
+    this.container.innerHTML = '';
+
+    // Create progress bar
+    const progressBar = document.createElement('div');
+    progressBar.className = 'progress-bar';
+    progressBar.innerHTML = `
+      <div class="progress-fill" id="progressFill"></div>
+      <span class="progress-text" id="progressText">0%</span>
+    `;
+    this.container.appendChild(progressBar);
+
+    // Create legend HTML
+    const legend = document.createElement('div');
+    legend.className = 'map-legend';
+    legend.innerHTML = `
+      <h3>מפת התחנות - ציר הזמן המלא</h3>
+      <div class="legend-items">
+        <div class="legend-item">
+          <span class="legend-marker locked"></span>
+          <span>תחנה נעולה</span>
         </div>
-      </div>
-      <svg class="timeline-map" viewBox="${this.mapViewBox.x} ${this.mapViewBox.y} ${this.mapViewBox.width} ${this.mapViewBox.height}" preserveAspectRatio="xMidYMid meet">
-        <defs>
-          <marker id="arrow-active" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
-            <path d="M0,0 L0,6 L9,3 z" fill="#2d7a5e" />
-          </marker>
-          <marker id="arrow-completed" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
-            <path d="M0,0 L0,6 L9,3 z" fill="#52b788" />
-          </marker>
-          <linearGradient id="pathGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" style="stop-color:#2d7a5e;stop-opacity:0.3" />
-            <stop offset="100%" style="stop-color:#a8d5ba;stop-opacity:0.8" />
-          </linearGradient>
-        </defs>
-        
-        <!-- Europe Background Map -->
-        <rect x="${this.mapViewBox.x}" y="${this.mapViewBox.y}" width="${this.mapViewBox.width}" height="${this.mapViewBox.height}" fill="#f9fcfb" stroke="#d0e8dc" stroke-width="0.3"/>
-        <g id="europe-map" class="map-background">
-        </g>
-        
-        <!-- Connecting Path -->
-        <g id="station-path" class="station-path"></g>
-        
-        <!-- Stations -->
-        <g id="stations" class="stations-group"></g>
-      </svg>
-      <div class="map-info-panel" id="stationInfo">
-        <div class="station-info-content">
-          <h2 id="stationTitle">בחרו תחנה</h2>
-          <p id="stationDate" class="station-date"></p>
-          <p id="stationDescription" class="station-description"></p>
-          <div id="stationKeyPoints" class="station-key-points"></div>
-          <button id="completeButton" class="complete-button" style="display: none;">סיימתי את התחנה</button>
-          <p id="stationStatus" class="station-status"></p>
+        <div class="legend-item">
+          <span class="legend-marker current"></span>
+          <span>התחנה הנוכחית</span>
         </div>
-      </div>
-      <div class="progress-bar">
-        <div class="progress-fill" id="progressFill"></div>
-        <span class="progress-text" id="progressText">0%</span>
+        <div class="legend-item">
+          <span class="legend-marker completed"></span>
+          <span>תחנה שביקרתם בה</span>
+        </div>
       </div>
     `;
+    this.container.appendChild(legend);
+
+    // Create SVG element properly
+    const svgNS = 'http://www.w3.org/2000/svg';
+    const svg = document.createElementNS(svgNS, 'svg');
+    svg.setAttribute('class', 'timeline-map');
+    svg.setAttribute('viewBox', `${this.mapViewBox.x} ${this.mapViewBox.y} ${this.mapViewBox.width} ${this.mapViewBox.height}`);
+    svg.setAttribute('preserveAspectRatio', 'xMidYMid meet');
+    svg.setAttributeNS('http://www.w3.org/2000/xmlns/', 'xmlns', svgNS);
+
+    // Add defs
+    const defs = document.createElementNS(svgNS, 'defs');
+    
+    const marker1 = document.createElementNS(svgNS, 'marker');
+    marker1.setAttribute('id', 'arrow-active');
+    marker1.setAttribute('markerWidth', '10');
+    marker1.setAttribute('markerHeight', '10');
+    marker1.setAttribute('refX', '9');
+    marker1.setAttribute('refY', '3');
+    marker1.setAttribute('orient', 'auto');
+    marker1.setAttribute('markerUnits', 'strokeWidth');
+    const path1 = document.createElementNS(svgNS, 'path');
+    path1.setAttribute('d', 'M0,0 L0,6 L9,3 z');
+    path1.setAttribute('fill', '#2d7a5e');
+    marker1.appendChild(path1);
+    defs.appendChild(marker1);
+
+    const marker2 = document.createElementNS(svgNS, 'marker');
+    marker2.setAttribute('id', 'arrow-completed');
+    marker2.setAttribute('markerWidth', '10');
+    marker2.setAttribute('markerHeight', '10');
+    marker2.setAttribute('refX', '9');
+    marker2.setAttribute('refY', '3');
+    marker2.setAttribute('orient', 'auto');
+    marker2.setAttribute('markerUnits', 'strokeWidth');
+    const path2 = document.createElementNS(svgNS, 'path');
+    path2.setAttribute('d', 'M0,0 L0,6 L9,3 z');
+    path2.setAttribute('fill', '#52b788');
+    marker2.appendChild(path2);
+    defs.appendChild(marker2);
+
+    const gradient = document.createElementNS(svgNS, 'linearGradient');
+    gradient.setAttribute('id', 'pathGradient');
+    gradient.setAttribute('x1', '0%');
+    gradient.setAttribute('y1', '0%');
+    gradient.setAttribute('x2', '100%');
+    gradient.setAttribute('y2', '100%');
+    const stop1 = document.createElementNS(svgNS, 'stop');
+    stop1.setAttribute('offset', '0%');
+    stop1.setAttribute('style', 'stop-color:#2d7a5e;stop-opacity:0.3');
+    gradient.appendChild(stop1);
+    const stop2 = document.createElementNS(svgNS, 'stop');
+    stop2.setAttribute('offset', '100%');
+    stop2.setAttribute('style', 'stop-color:#a8d5ba;stop-opacity:0.8');
+    gradient.appendChild(stop2);
+    defs.appendChild(gradient);
+
+    svg.appendChild(defs);
+
+    // Add background rect
+    const bg = document.createElementNS(svgNS, 'rect');
+    bg.setAttribute('x', this.mapViewBox.x.toString());
+    bg.setAttribute('y', this.mapViewBox.y.toString());
+    bg.setAttribute('width', this.mapViewBox.width.toString());
+    bg.setAttribute('height', this.mapViewBox.height.toString());
+    bg.setAttribute('fill', '#f9fcfb');
+    bg.setAttribute('stroke', '#d0e8dc');
+    bg.setAttribute('stroke-width', '0.3');
+    svg.appendChild(bg);
+
+    // Add groups
+    const europeMap = document.createElementNS(svgNS, 'g');
+    europeMap.setAttribute('id', 'europe-map');
+    europeMap.setAttribute('class', 'map-background');
+    svg.appendChild(europeMap);
+
+    const stationPath = document.createElementNS(svgNS, 'g');
+    stationPath.setAttribute('id', 'station-path');
+    stationPath.setAttribute('class', 'station-path');
+    svg.appendChild(stationPath);
+
+    const stations = document.createElementNS(svgNS, 'g');
+    stations.setAttribute('id', 'stations');
+    stations.setAttribute('class', 'stations-group');
+    svg.appendChild(stations);
+
+    // Add SVG to container
+    this.container.appendChild(svg);
+
+    // Add info panel
+    const infoPanel = document.createElement('div');
+    infoPanel.className = 'map-info-panel';
+    infoPanel.id = 'stationInfo';
+    infoPanel.innerHTML = `
+      <div class="station-info-content">
+        <h2 id="stationTitle">בחרו תחנה</h2>
+        <p id="stationDate" class="station-date"></p>
+        <p id="stationDescription" class="station-description"></p>
+        <div id="stationKeyPoints" class="station-key-points"></div>
+        <button id="completeButton" class="complete-button" style="display: none;">סיימתי את התחנה</button>
+        <p id="stationStatus" class="station-status"></p>
+      </div>
+    `;
+    this.container.appendChild(infoPanel);
   }
 
   projectCoords(lat, lon) {
