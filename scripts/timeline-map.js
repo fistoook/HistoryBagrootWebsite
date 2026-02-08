@@ -7,14 +7,14 @@ class EuropeTimelineMap {
     this.data = dataArray;
     this.completedStations = new Set(JSON.parse(localStorage.getItem('completedStations') || '[]'));
     this.currentStation = parseInt(localStorage.getItem('currentStation') || '1');
-    this.mapViewBox = { x: -15, y: 30, width: 65, height: 35 };
-    this.mapScale = 35; // pixels per degree
+    // Adjust viewBox to match typical map proportions
+    this.mapViewBox = { x: 0, y: 0, width: 100, height: 80 };
+    this.mapScale = 1;
     this.init();
   }
 
   init() {
     this.createMapStructure();
-    this.renderMap();
     this.renderStations();
     this.renderConnectingPath();
     this.attachEventListeners();
@@ -117,12 +117,22 @@ class EuropeTimelineMap {
 
     svg.appendChild(defs);
 
-    // Add background rect
+    // Add map image as background
+    const image = document.createElementNS(svgNS, 'image');
+    image.setAttribute('x', '0');
+    image.setAttribute('y', '0');
+    image.setAttribute('width', '100');
+    image.setAttribute('height', '80');
+    image.setAttributeNS('http://www.w3.org/1999/xlink', 'href', 'images/map.jpg');
+    image.setAttribute('preserveAspectRatio', 'xMidYMid slice');
+    svg.appendChild(image);
+
+    // Add background rect (optional, for fallback)
     const bg = document.createElementNS(svgNS, 'rect');
-    bg.setAttribute('x', this.mapViewBox.x.toString());
-    bg.setAttribute('y', this.mapViewBox.y.toString());
-    bg.setAttribute('width', this.mapViewBox.width.toString());
-    bg.setAttribute('height', this.mapViewBox.height.toString());
+    bg.setAttribute('x', '0');
+    bg.setAttribute('y', '0');
+    bg.setAttribute('width', '100');
+    bg.setAttribute('height', '80');
     bg.setAttribute('fill', '#f9fcfb');
     bg.setAttribute('stroke', '#d0e8dc');
     bg.setAttribute('stroke-width', '0.3');
@@ -165,120 +175,20 @@ class EuropeTimelineMap {
   }
 
   projectCoords(lat, lon) {
-    // Simple linear projection for European map
-    // mapViewBox: x: -15 to 50, y: 30 to 65
-    const x = (lon - this.mapViewBox.x);
-    const y = (lat - this.mapViewBox.y);
-    return { x, y };
+    // Map actual coordinates to viewBox percentages
+    // Latitude range: 30 to 67 (maps to viewBox 0-80)
+    // Longitude range: -9 to 41 (maps to viewBox 0-100)
+    const latMin = 30, latMax = 67;
+    const lonMin = -9, lonMax = 41;
+    
+    const x = ((lon - lonMin) / (lonMax - lonMin)) * 100;
+    const y = ((latMax - lat) / (latMax - latMin)) * 80; // inverted because SVG y increases downward
+    
+    return { x: Math.max(0, Math.min(100, x)), y: Math.max(0, Math.min(80, y)) };
   }
 
   renderMap() {
-    const mapGroup = document.getElementById('europe-map');
-    if (!mapGroup) return;
-
-    // Draw simplified country borders
-    const countries = [
-      // France
-      { name: 'France', color: '#e8f0f8', coords: [[42.5, -5], [51.5, -5], [51.5, 8], [42.5, 8], [42.5, -5]] },
-      // Germany
-      { name: 'Germany', color: '#f0e8f8', coords: [[48, 5], [55, 5], [55, 16], [48, 16], [48, 5]] },
-      // Poland
-      { name: 'Poland', color: '#f8f0e8', coords: [[49, 14], [54, 14], [54, 24], [49, 24], [49, 14]] },
-      // Italy
-      { name: 'Italy', color: '#e8f8f0', coords: [[37, 7], [47, 7], [47, 19], [37, 19], [37, 7]] },
-      // Spain
-      { name: 'Spain', color: '#f8f8e8', coords: [[36, -9], [44, -9], [44, 3], [36, 3], [36, -9]] },
-      // UK
-      { name: 'UK', color: '#fff0e8', coords: [[50, -6], [56, -6], [56, 2], [50, 2], [50, -6]] },
-      // Hungary
-      { name: 'Hungary', color: '#f0f8e8', coords: [[45.5, 16], [48.5, 16], [48.5, 23], [45.5, 23], [45.5, 16]] },
-      // Romania
-      { name: 'Romania', color: '#e8e8f8', coords: [[43.5, 21], [48.5, 21], [48.5, 30], [43.5, 30], [43.5, 21]] },
-      // Bulgaria
-      { name: 'Bulgaria', color: '#f8e8e8', coords: [[41, 22], [45, 22], [45, 29], [41, 29], [41, 22]] },
-      // Austria
-      { name: 'Austria', color: '#f0f0e8', coords: [[47.2, 9.5], [49.2, 9.5], [49.2, 17], [47.2, 17], [47.2, 9.5]] },
-      // Czech
-      { name: 'Czech', color: '#f8f0f0', coords: [[48.5, 12], [51, 12], [51, 18.5], [48.5, 18.5], [48.5, 12]] },
-      // Soviet
-      { name: 'Soviet', color: '#e8f8f8', coords: [[41, 19], [67, 19], [67, 60], [41, 60], [41, 19]] }
-    ];
-
-    // Draw country polygons
-    countries.forEach(country => {
-      const polygon = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
-      let points = '';
-      
-      country.coords.forEach(coord => {
-        const proj = this.projectCoords(coord[0], coord[1]);
-        points += `${proj.x},${proj.y} `;
-      });
-      
-      polygon.setAttribute('points', points);
-      polygon.setAttribute('fill', country.color);
-      polygon.setAttribute('stroke', '#c0d0d0');
-      polygon.setAttribute('stroke-width', '0.4');
-      polygon.setAttribute('opacity', '0.6');
-      mapGroup.appendChild(polygon);
-    });
-
-    // Add country labels
-    const labels = [
-      { text: 'Germany', lat: 51.5, lon: 10.5, size: 1.2 },
-      { text: 'Poland', lat: 51.5, lon: 19, size: 1.1 },
-      { text: 'France', lat: 47, lon: 1.5, size: 1.1 },
-      { text: 'Italy', lat: 42, lon: 13, size: 1 },
-      { text: 'Spain', lat: 40, lon: -3, size: 1 },
-      { text: 'UK', lat: 53, lon: -2, size: 0.9 },
-      { text: 'Hungary', lat: 47, lon: 19.5, size: 0.9 },
-      { text: 'Romania', lat: 46, lon: 25.5, size: 0.9 },
-      { text: 'Bulgaria', lat: 43, lon: 25.5, size: 0.8 },
-      { text: 'USSR', lat: 55, lon: 40, size: 1.2 }
-    ];
-
-    labels.forEach(label => {
-      const proj = this.projectCoords(label.lat, label.lon);
-      const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-      text.setAttribute('x', proj.x);
-      text.setAttribute('y', proj.y);
-      text.setAttribute('text-anchor', 'middle');
-      text.setAttribute('font-size', label.size);
-      text.setAttribute('font-weight', '400');
-      text.setAttribute('fill', '#88a0a0');
-      text.setAttribute('opacity', '0.5');
-      text.setAttribute('pointer-events', 'none');
-      text.textContent = label.text;
-      mapGroup.appendChild(text);
-    });
-
-    // Add grid lines for reference (subtle)
-    for (let lon = -10; lon <= 40; lon += 10) {
-      const proj1 = this.projectCoords(30, lon);
-      const proj2 = this.projectCoords(68, lon);
-      const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-      line.setAttribute('x1', proj1.x);
-      line.setAttribute('y1', proj1.y);
-      line.setAttribute('x2', proj2.x);
-      line.setAttribute('y2', proj2.y);
-      line.setAttribute('stroke', '#d0d0d0');
-      line.setAttribute('stroke-width', '0.15');
-      line.setAttribute('opacity', '0.15');
-      mapGroup.appendChild(line);
-    }
-
-    for (let lat = 30; lat <= 70; lat += 10) {
-      const proj1 = this.projectCoords(lat, -10);
-      const proj2 = this.projectCoords(lat, 40);
-      const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-      line.setAttribute('x1', proj1.x);
-      line.setAttribute('y1', proj1.y);
-      line.setAttribute('x2', proj2.x);
-      line.setAttribute('y2', proj2.y);
-      line.setAttribute('stroke', '#d0d0d0');
-      line.setAttribute('stroke-width', '0.15');
-      line.setAttribute('opacity', '0.15');
-      mapGroup.appendChild(line);
-    }
+    // Map rendering via background image - no need to draw countries
   }
 
   renderConnectingPath() {
