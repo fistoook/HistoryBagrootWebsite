@@ -151,6 +151,39 @@ body {
   gap: 30px;
 }
 
+.figures-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 30px;
+}
+
+.figure-card {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+  transition: transform 0.3s ease;
+}
+
+.figure-card:hover {
+  transform: translateY(-5px);
+}
+
+.figure-card .card {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.figure-img {
+  width: 150px;
+  height: 150px;
+  object-fit: cover;
+  border-radius: 50%;
+  margin: 0 auto 15px auto;
+  display: block;
+  border: 3px solid var(--secondary-color);
+}
+
 .feature-card {
   background: white;
   border: 2px solid var(--border-color);
