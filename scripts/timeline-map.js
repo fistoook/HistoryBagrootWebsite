@@ -165,9 +165,10 @@ class EuropeTimelineMap {
   }
 
   projectCoords(lat, lon) {
-    // Mercator-like projection for European map
-    const x = (lon - this.mapViewBox.x) * this.mapScale / this.mapViewBox.width;
-    const y = (lat - this.mapViewBox.y) * this.mapScale / this.mapViewBox.height;
+    // Simple linear projection for European map
+    // mapViewBox: x: -15 to 50, y: 30 to 65
+    const x = (lon - this.mapViewBox.x);
+    const y = (lat - this.mapViewBox.y);
     return { x, y };
   }
 
