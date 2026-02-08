@@ -1175,18 +1175,18 @@ table td a:hover {
 }
 
 .station-marker:not(.locked):hover circle:first-child {
-  r: 4.5;
+  r: 1.8;
   filter: drop-shadow(0 3px 8px rgba(45, 122, 94, 0.7));
 }
 
 @keyframes pulse {
   0% {
-    r: 4.5;
+    r: 1.8;
     opacity: 1;
-    stroke-width: 0.8;
+    stroke-width: 0.3;
   }
   100% {
-    r: 8;
+    r: 3.5;
     opacity: 0;
     stroke-width: 0;
   }
@@ -1198,6 +1198,16 @@ table td a:hover {
 
 .station-path {
   opacity: 0.6;
+}
+
+.stations-group {
+  pointer-events: auto;
+  z-index: 10;
+}
+
+.station-marker {
+  pointer-events: auto;
+  cursor: pointer;
 }
 
 .map-background {

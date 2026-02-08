@@ -123,20 +123,26 @@ class EuropeTimelineMap {
     image.setAttribute('y', '0');
     image.setAttribute('width', '100');
     image.setAttribute('height', '80');
+    // Use both xlink:href (for better compatibility) and href
+    image.setAttribute('href', 'images/map.jpg');
     image.setAttributeNS('http://www.w3.org/1999/xlink', 'href', 'images/map.jpg');
     image.setAttribute('preserveAspectRatio', 'xMidYMid slice');
     svg.appendChild(image);
 
-    // Add background rect (optional, for fallback)
+    // Add background rect (fallback for when image doesn't load)
     const bg = document.createElementNS(svgNS, 'rect');
     bg.setAttribute('x', '0');
     bg.setAttribute('y', '0');
     bg.setAttribute('width', '100');
     bg.setAttribute('height', '80');
-    bg.setAttribute('fill', '#f9fcfb');
+    bg.setAttribute('fill', '#ffffff');
     bg.setAttribute('stroke', '#d0e8dc');
-    bg.setAttribute('stroke-width', '0.3');
-    svg.appendChild(bg);
+    bg.setAttribute('stroke-width', '0.5');
+    // Place this BEFORE the image so it's in the background
+    svg.insertBefore(bg, svg.firstChild);
+    // Also ensure image loads properly, move it after bg
+    svg.removeChild(image);
+    svg.insertBefore(image, svg.childNodes[svg.childNodes.length - 1]);}
 
     // Add groups
     const europeMap = document.createElementNS(svgNS, 'g');
@@ -217,7 +223,7 @@ class EuropeTimelineMap {
       const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
       path.setAttribute('d', pathData);
       path.setAttribute('stroke', 'url(#pathGradient)');
-      path.setAttribute('stroke-width', '2.5');
+      path.setAttribute('stroke-width', '0.8');
       path.setAttribute('fill', 'none');
       path.setAttribute('stroke-linecap', 'round');
       path.setAttribute('stroke-linejoin', 'round');
@@ -250,11 +256,11 @@ class EuropeTimelineMap {
       const bgCircle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
       bgCircle.setAttribute('cx', proj.x);
       bgCircle.setAttribute('cy', proj.y);
-      bgCircle.setAttribute('r', '3.5');
+      bgCircle.setAttribute('r', '1.2');
       bgCircle.setAttribute('fill', isCompleted ? '#52b788' : isCurrent ? '#2d7a5e' : '#ccc');
       bgCircle.setAttribute('opacity', isLocked ? '0.4' : '1');
       bgCircle.setAttribute('stroke', 'white');
-      bgCircle.setAttribute('stroke-width', '1.5');
+      bgCircle.setAttribute('stroke-width', '0.6');
       stationGroup.appendChild(bgCircle);
 
       // Highlight ring for current
@@ -262,10 +268,10 @@ class EuropeTimelineMap {
         const ring = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
         ring.setAttribute('cx', proj.x);
         ring.setAttribute('cy', proj.y);
-        ring.setAttribute('r', '4.5');
+        ring.setAttribute('r', '1.8');
         ring.setAttribute('fill', 'none');
         ring.setAttribute('stroke', '#2d7a5e');
-        ring.setAttribute('stroke-width', '0.8');
+        ring.setAttribute('stroke-width', '0.3');
         ring.setAttribute('opacity', '0.6');
         stationGroup.appendChild(ring);
 
@@ -273,10 +279,10 @@ class EuropeTimelineMap {
         const pulse = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
         pulse.setAttribute('cx', proj.x);
         pulse.setAttribute('cy', proj.y);
-        pulse.setAttribute('r', '4.5');
+        pulse.setAttribute('r', '1.8');
         pulse.setAttribute('fill', 'none');
         pulse.setAttribute('stroke', '#2d7a5e');
-        pulse.setAttribute('stroke-width', '0.8');
+        pulse.setAttribute('stroke-width', '0.3');
         pulse.setAttribute('class', 'pulse-ring');
         stationGroup.appendChild(pulse);
       }
@@ -284,9 +290,9 @@ class EuropeTimelineMap {
       // Station number
       const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
       text.setAttribute('x', proj.x);
-      text.setAttribute('y', proj.y + 0.7);
+      text.setAttribute('y', proj.y + 0.25);
       text.setAttribute('text-anchor', 'middle');
-      text.setAttribute('font-size', '1.4');
+      text.setAttribute('font-size', '0.6');
       text.setAttribute('font-weight', 'bold');
       text.setAttribute('fill', isLocked ? '#999' : 'white');
       text.setAttribute('pointer-events', 'none');
@@ -298,14 +304,16 @@ class EuropeTimelineMap {
       title.textContent = `${station.title} (${station.date})${isLocked ? ' - נעול עד שתשלימו את התחנה הקודמת' : ''}`;
       stationGroup.appendChild(title);
 
-      // Click handler
+      // Click handler - ensure clickability
+      stationGroup.setAttribute('pointer-events', 'auto');
+      stationGroup.style.cursor = isLocked ? 'not-allowed' : 'pointer';
       if (!isLocked) {
         stationGroup.addEventListener('click', () => this.showStationInfo(station));
         stationGroup.addEventListener('mouseenter', () => {
-          bgCircle.setAttribute('r', '4.5');
+          bgCircle.setAttribute('r', '1.8');
         });
         stationGroup.addEventListener('mouseleave', () => {
-          bgCircle.setAttribute('r', '3.5');
+          bgCircle.setAttribute('r', '1.2');
         });
       }
 
