@@ -54,8 +54,8 @@ class EuropeTimelineMap {
         </defs>
         
         <!-- Europe Background Map -->
+        <rect x="${this.mapViewBox.x}" y="${this.mapViewBox.y}" width="${this.mapViewBox.width}" height="${this.mapViewBox.height}" fill="#f9fcfb" stroke="#d0e8dc" stroke-width="0.3"/>
         <g id="europe-map" class="map-background">
-          <path d="M -5 35 L 40 35 L 40 65 L -5 65 Z" fill="#e8f5ef" stroke="#d0e8dc" stroke-width="0.2"/>
         </g>
         
         <!-- Connecting Path -->
@@ -92,18 +92,82 @@ class EuropeTimelineMap {
     const mapGroup = document.getElementById('europe-map');
     if (!mapGroup) return;
 
-    // Add a simple background representing Europe
-    const europeanCountries = [
-      { name: 'Germany', bounds: [[48, 5], [55, 16]] },
-      { name: 'Poland', bounds: [[49, 14], [54, 24]] },
-      { name: 'France', bounds: [[42.5, -5], [51, 8]] },
-      { name: 'Italy', bounds: [[37, 7], [47, 19]] },
-      { name: 'Hungary', bounds: [[45.5, 16], [48.5, 23]] },
-      { name: 'Ukraine', bounds: [[41, 22], [53, 41]] },
-      { name: 'USSR', bounds: [[45, 19], [67, 171]] }
+    // Draw simplified country borders
+    const countries = [
+      // France
+      { name: 'France', color: '#e8f0f8', coords: [[42.5, -5], [51.5, -5], [51.5, 8], [42.5, 8], [42.5, -5]] },
+      // Germany
+      { name: 'Germany', color: '#f0e8f8', coords: [[48, 5], [55, 5], [55, 16], [48, 16], [48, 5]] },
+      // Poland
+      { name: 'Poland', color: '#f8f0e8', coords: [[49, 14], [54, 14], [54, 24], [49, 24], [49, 14]] },
+      // Italy
+      { name: 'Italy', color: '#e8f8f0', coords: [[37, 7], [47, 7], [47, 19], [37, 19], [37, 7]] },
+      // Spain
+      { name: 'Spain', color: '#f8f8e8', coords: [[36, -9], [44, -9], [44, 3], [36, 3], [36, -9]] },
+      // UK
+      { name: 'UK', color: '#fff0e8', coords: [[50, -6], [56, -6], [56, 2], [50, 2], [50, -6]] },
+      // Hungary
+      { name: 'Hungary', color: '#f0f8e8', coords: [[45.5, 16], [48.5, 16], [48.5, 23], [45.5, 23], [45.5, 16]] },
+      // Romania
+      { name: 'Romania', color: '#e8e8f8', coords: [[43.5, 21], [48.5, 21], [48.5, 30], [43.5, 30], [43.5, 21]] },
+      // Bulgaria
+      { name: 'Bulgaria', color: '#f8e8e8', coords: [[41, 22], [45, 22], [45, 29], [41, 29], [41, 22]] },
+      // Austria
+      { name: 'Austria', color: '#f0f0e8', coords: [[47.2, 9.5], [49.2, 9.5], [49.2, 17], [47.2, 17], [47.2, 9.5]] },
+      // Czech
+      { name: 'Czech', color: '#f8f0f0', coords: [[48.5, 12], [51, 12], [51, 18.5], [48.5, 18.5], [48.5, 12]] },
+      // Soviet
+      { name: 'Soviet', color: '#e8f8f8', coords: [[41, 19], [67, 19], [67, 60], [41, 60], [41, 19]] }
     ];
 
-    // Add grid lines for reference
+    // Draw country polygons
+    countries.forEach(country => {
+      const polygon = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
+      let points = '';
+      
+      country.coords.forEach(coord => {
+        const proj = this.projectCoords(coord[0], coord[1]);
+        points += `${proj.x},${proj.y} `;
+      });
+      
+      polygon.setAttribute('points', points);
+      polygon.setAttribute('fill', country.color);
+      polygon.setAttribute('stroke', '#c0d0d0');
+      polygon.setAttribute('stroke-width', '0.4');
+      polygon.setAttribute('opacity', '0.6');
+      mapGroup.appendChild(polygon);
+    });
+
+    // Add country labels
+    const labels = [
+      { text: 'Germany', lat: 51.5, lon: 10.5, size: 1.2 },
+      { text: 'Poland', lat: 51.5, lon: 19, size: 1.1 },
+      { text: 'France', lat: 47, lon: 1.5, size: 1.1 },
+      { text: 'Italy', lat: 42, lon: 13, size: 1 },
+      { text: 'Spain', lat: 40, lon: -3, size: 1 },
+      { text: 'UK', lat: 53, lon: -2, size: 0.9 },
+      { text: 'Hungary', lat: 47, lon: 19.5, size: 0.9 },
+      { text: 'Romania', lat: 46, lon: 25.5, size: 0.9 },
+      { text: 'Bulgaria', lat: 43, lon: 25.5, size: 0.8 },
+      { text: 'USSR', lat: 55, lon: 40, size: 1.2 }
+    ];
+
+    labels.forEach(label => {
+      const proj = this.projectCoords(label.lat, label.lon);
+      const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      text.setAttribute('x', proj.x);
+      text.setAttribute('y', proj.y);
+      text.setAttribute('text-anchor', 'middle');
+      text.setAttribute('font-size', label.size);
+      text.setAttribute('font-weight', '400');
+      text.setAttribute('fill', '#88a0a0');
+      text.setAttribute('opacity', '0.5');
+      text.setAttribute('pointer-events', 'none');
+      text.textContent = label.text;
+      mapGroup.appendChild(text);
+    });
+
+    // Add grid lines for reference (subtle)
     for (let lon = -10; lon <= 40; lon += 10) {
       const proj1 = this.projectCoords(30, lon);
       const proj2 = this.projectCoords(68, lon);
@@ -112,9 +176,9 @@ class EuropeTimelineMap {
       line.setAttribute('y1', proj1.y);
       line.setAttribute('x2', proj2.x);
       line.setAttribute('y2', proj2.y);
-      line.setAttribute('stroke', '#e8d5d5');
-      line.setAttribute('stroke-width', '0.3');
-      line.setAttribute('opacity', '0.2');
+      line.setAttribute('stroke', '#d0d0d0');
+      line.setAttribute('stroke-width', '0.15');
+      line.setAttribute('opacity', '0.15');
       mapGroup.appendChild(line);
     }
 
@@ -126,9 +190,9 @@ class EuropeTimelineMap {
       line.setAttribute('y1', proj1.y);
       line.setAttribute('x2', proj2.x);
       line.setAttribute('y2', proj2.y);
-      line.setAttribute('stroke', '#e8d5d5');
-      line.setAttribute('stroke-width', '0.3');
-      line.setAttribute('opacity', '0.2');
+      line.setAttribute('stroke', '#d0d0d0');
+      line.setAttribute('stroke-width', '0.15');
+      line.setAttribute('opacity', '0.15');
       mapGroup.appendChild(line);
     }
   }
@@ -159,11 +223,11 @@ class EuropeTimelineMap {
       const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
       path.setAttribute('d', pathData);
       path.setAttribute('stroke', 'url(#pathGradient)');
-      path.setAttribute('stroke-width', '1.5');
+      path.setAttribute('stroke-width', '2.5');
       path.setAttribute('fill', 'none');
       path.setAttribute('stroke-linecap', 'round');
       path.setAttribute('stroke-linejoin', 'round');
-      path.setAttribute('opacity', '0.6');
+      path.setAttribute('opacity', '0.8');
       pathGroup.appendChild(path);
     }
   }
@@ -192,9 +256,11 @@ class EuropeTimelineMap {
       const bgCircle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
       bgCircle.setAttribute('cx', proj.x);
       bgCircle.setAttribute('cy', proj.y);
-      bgCircle.setAttribute('r', '2');
+      bgCircle.setAttribute('r', '3.5');
       bgCircle.setAttribute('fill', isCompleted ? '#52b788' : isCurrent ? '#2d7a5e' : '#ccc');
       bgCircle.setAttribute('opacity', isLocked ? '0.4' : '1');
+      bgCircle.setAttribute('stroke', 'white');
+      bgCircle.setAttribute('stroke-width', '1.5');
       stationGroup.appendChild(bgCircle);
 
       // Highlight ring for current
@@ -202,10 +268,10 @@ class EuropeTimelineMap {
         const ring = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
         ring.setAttribute('cx', proj.x);
         ring.setAttribute('cy', proj.y);
-        ring.setAttribute('r', '2.5');
+        ring.setAttribute('r', '4.5');
         ring.setAttribute('fill', 'none');
         ring.setAttribute('stroke', '#2d7a5e');
-        ring.setAttribute('stroke-width', '0.5');
+        ring.setAttribute('stroke-width', '0.8');
         ring.setAttribute('opacity', '0.6');
         stationGroup.appendChild(ring);
 
@@ -213,10 +279,10 @@ class EuropeTimelineMap {
         const pulse = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
         pulse.setAttribute('cx', proj.x);
         pulse.setAttribute('cy', proj.y);
-        pulse.setAttribute('r', '2.5');
+        pulse.setAttribute('r', '4.5');
         pulse.setAttribute('fill', 'none');
         pulse.setAttribute('stroke', '#2d7a5e');
-        pulse.setAttribute('stroke-width', '0.5');
+        pulse.setAttribute('stroke-width', '0.8');
         pulse.setAttribute('class', 'pulse-ring');
         stationGroup.appendChild(pulse);
       }
@@ -224,9 +290,9 @@ class EuropeTimelineMap {
       // Station number
       const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
       text.setAttribute('x', proj.x);
-      text.setAttribute('y', proj.y + 0.4);
+      text.setAttribute('y', proj.y + 0.7);
       text.setAttribute('text-anchor', 'middle');
-      text.setAttribute('font-size', '1');
+      text.setAttribute('font-size', '1.4');
       text.setAttribute('font-weight', 'bold');
       text.setAttribute('fill', isLocked ? '#999' : 'white');
       text.setAttribute('pointer-events', 'none');
@@ -242,10 +308,10 @@ class EuropeTimelineMap {
       if (!isLocked) {
         stationGroup.addEventListener('click', () => this.showStationInfo(station));
         stationGroup.addEventListener('mouseenter', () => {
-          bgCircle.setAttribute('r', '2.8');
+          bgCircle.setAttribute('r', '4.5');
         });
         stationGroup.addEventListener('mouseleave', () => {
-          bgCircle.setAttribute('r', '2');
+          bgCircle.setAttribute('r', '3.5');
         });
       }
 

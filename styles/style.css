@@ -1141,11 +1141,13 @@ table td a:hover {
   width: 100%;
   height: auto;
   max-width: 100%;
+  min-height: 600px;
   border: 2px solid var(--border-color);
   border-radius: 8px;
   background: linear-gradient(135deg, #fafbfa 0%, #f5f8f6 100%);
   box-shadow: 0 4px 12px rgba(74, 157, 111, 0.1);
   margin-bottom: 30px;
+  display: block;
 }
 
 .station-marker circle {
@@ -1173,12 +1175,12 @@ table td a:hover {
 
 @keyframes pulse {
   0% {
-    r: 2.5;
+    r: 4.5;
     opacity: 1;
-    stroke-width: 0.5;
+    stroke-width: 0.8;
   }
   100% {
-    r: 5;
+    r: 8;
     opacity: 0;
     stroke-width: 0;
   }
@@ -1190,6 +1192,18 @@ table td a:hover {
 
 .station-path {
   opacity: 0.6;
+}
+
+.map-background {
+  opacity: 1;
+}
+
+.map-background polygon {
+  transition: opacity 0.2s ease;
+}
+
+.map-background polygon:hover {
+  opacity: 0.8;
 }
 
 .map-info-panel {
