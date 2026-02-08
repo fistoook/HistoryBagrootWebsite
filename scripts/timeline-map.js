@@ -142,7 +142,7 @@ class EuropeTimelineMap {
     svg.insertBefore(bg, svg.firstChild);
     // Also ensure image loads properly, move it after bg
     svg.removeChild(image);
-    svg.insertBefore(image, svg.childNodes[svg.childNodes.length - 1]);}
+    svg.insertBefore(image, svg.childNodes[svg.childNodes.length - 1]);
 
     // Add groups
     const europeMap = document.createElementNS(svgNS, 'g');
