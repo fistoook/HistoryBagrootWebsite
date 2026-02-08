@@ -57,6 +57,25 @@ body {
   align-items: center;
 }
 
+.logo-link {
+  display: flex;
+  align-items: center;
+}
+
+.header-logo {
+  height: 50px;
+  width: auto;
+  transition: transform 0.3s ease;
+}
+
+.logo-link:hover .header-logo {
+  transform: scale(1.05);
+}
+
+.logo-link:hover {
+  text-decoration: none;
+}
+
 .logo h1 {
   font-size: 1.8em;
   margin-bottom: 3px;
@@ -98,6 +117,60 @@ body {
   padding: 100px 20px;
   text-align: center;
   margin-bottom: 50px;
+  position: relative;
+  overflow: hidden;
+}
+
+.hero-background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  opacity: 0.3;
+}
+
+.plane {
+  position: absolute;
+  font-size: 4em;
+  opacity: 0.4;
+  animation: flyAcross 20s linear infinite;
+}
+
+.plane-1 {
+  top: 20%;
+  animation-delay: 0s;
+}
+
+.plane-2 {
+  top: 70%;
+  animation-delay: 10s;
+}
+
+@keyframes flyAcross {
+  from {
+    right: -100px;
+  }
+  to {
+    right: 100%;
+  }
+}
+
+.hero-content {
+  position: relative;
+  z-index: 1;
+  animation: fadeInUp 1s ease-out;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .hero-content h2 {
