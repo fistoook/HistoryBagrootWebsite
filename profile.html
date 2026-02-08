@@ -335,14 +335,23 @@
 </head>
 <body>
     <div class="profile-container">
-        <div class="profile-header">
-            <div class="profile-logo">🏛️ מסע היסטורי</div>
-            <div class="profile-nav">
-                <a href="guide.html">מדריך</a>
-                <a href="timeline-map.html">חזור למפה</a>
-                <a href="index.html">דף הבית</a>
+        <header class="main-header" style="background: white; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+        <div class="header-container">
+            <a href="index.html" class="logo-link">
+                <div class="profile-logo" style="font-size: 28px; font-weight: 700; color: #667eea; margin: 0;">🏛️ <span style="margin-right: 8px;">מסע היסטורי</span></div>
+            </a>
+            <nav class="main-nav" style="flex: 1; justify-content: center;">
+                <ul style="gap: 20px;">
+                    <li><a href="guide.html">מדריך</a></li>
+                    <li><a href="timeline-map.html">חזור למפה</a></li>
+                    <li><a href="index.html">דף הבית</a></li>
+                </ul>
+            </nav>
+            <div class="header-actions">
+                <button onclick="logout()" style="background: #e74c3c; color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 14px;">התנתק</button>
             </div>
         </div>
+    </header>
 
         <div class="profile-main">
             <!-- Left: Avatar Profile -->

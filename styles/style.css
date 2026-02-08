@@ -49,12 +49,12 @@ body {
 }
 
 .header-container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 20px;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  padding: 0 30px;
+  width: 100%;
+  max-width: 100%;
 }
 
 .logo-link {
@@ -102,6 +102,26 @@ body {
   text-decoration: none;
 }
 
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  min-width: fit-content;
+}
+
+.auth-buttons {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.auth-buttons .cta-button {
+  padding: 8px 16px;
+  font-size: 14px;
+  margin: 0;
+  white-space: nowrap;
+}
+
 .logo h1 {
   font-size: 1.8em;
   margin-bottom: 3px;
@@ -113,11 +133,19 @@ body {
   font-style: italic;
 }
 
+.main-nav {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  margin: 0 20px;
+}
+
 .main-nav ul {
   display: flex;
   list-style: none;
   gap: 30px;
   flex-wrap: wrap;
+  justify-content: center;
 }
 
 .main-nav a {
@@ -533,13 +561,37 @@ main {
 /* Responsive Design */
 @media (max-width: 768px) {
   .header-container {
-    flex-direction: column;
-    gap: 15px;
+    flex-wrap: wrap;
+    padding: 12px 20px;
+  }
+
+  .logo-link {
+    order: 1;
+  }
+
+  .main-nav {
+    order: 3;
+    flex-basis: 100%;
+    margin: 10px 0 0 0;
   }
 
   .main-nav ul {
     gap: 15px;
     justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .main-nav a {
+    font-size: 13px;
+    padding: 6px 8px;
+  }
+
+  .header-actions {
+    order: 2;
+  }
+
+  .header-logo {
+    height: 40px;
   }
 
   .hero-content h2 {
@@ -556,6 +608,52 @@ main {
 
   .start-button {
     justify-content: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .header-container {
+    padding: 10px 15px;
+    gap: 8px;
+  }
+
+  .logo-link {
+    order: 1;
+  }
+
+  .header-logo {
+    height: 35px;
+  }
+
+  .main-nav {
+    order: 3;
+    flex-basis: 100%;
+    margin: 8px 0 0 0;
+  }
+
+  .main-nav ul {
+    gap: 10px;
+    font-size: 12px;
+  }
+
+  .main-nav a {
+    font-size: 12px;
+    padding: 5px 6px;
+  }
+
+  .header-actions {
+    order: 2;
+    gap: 10px;
+  }
+
+  .auth-buttons .cta-button {
+    padding: 6px 12px;
+    font-size: 12px;
+  }
+
+  .profile-link {
+    font-size: 12px;
+    gap: 5px;
   }
 }
 
