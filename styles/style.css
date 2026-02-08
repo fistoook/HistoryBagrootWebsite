@@ -498,6 +498,11 @@ body[dir="rtl"] .timeline-item::after {
   border-radius: 4px;
   cursor: pointer;
   transition: all 0.3s ease;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
 }
 
 .option:hover {
@@ -506,7 +511,8 @@ body[dir="rtl"] .timeline-item::after {
 }
 
 .option input[type="radio"] {
-  margin-right: 10px;
+  margin-top: 3px;
+  flex-shrink: 0;
 }
 
 .option.selected {
