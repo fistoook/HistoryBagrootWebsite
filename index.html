@@ -1,11 +1,106 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="he" dir="rtl">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Paz The Bagroot</title>
+  <title>מעבדת היסטוריה - הכנה לבגרות</title>
+  <link rel="stylesheet" href="styles/style.css">
 </head>
 
-<body>
+<body dir="rtl">
+  <header class="main-header">
+    <div class="header-container">
+      <div class="logo">
+        <h1>מעבדת ההיסטוריה: מלחמת העולם והשואה</h1>
+        <p class="tagline">סיכום ברור, ציר זמן חי, וחידוני תרגול לבגרות</p>
+      </div>
+      <nav class="main-nav">
+        <ul>
+          <li><a href="index.html" class="active">בית</a></li>
+          <li><a href="interactive-timeline.html">ציר זמן אינטראקטיבי</a></li>
+          <li><a href="topics.html">נושאים לפי פרקים</a></li>
+          <li><a href="quizzes.html">חידונים</a></li>
+          <li><a href="study-materials.html">חומרי לימוד</a></li>
+          <li><a href="about.html">אודות</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <!-- Hero Section -->
+    <section class="hero">
+      <div class="hero-content">
+        <h2>הכנה לבגרות בהיסטוריה</h2>
+        <p>ללמוד את מלחמת העולם השניה והשואה בצורה חזותית, מסודרת ומעמיקה</p>
+        <a href="interactive-timeline.html" class="cta-button">לציר הזמן המלא</a>
+      </div>
+    </section>
+
+    <!-- Feature Cards Section -->
+    <section class="features">
+      <div class="container">
+        <h2>איך לומדים חכם לבגרות</h2>
+        <div class="features-grid">
+          <div class="feature-card">
+            <div class="feature-icon">🗓️</div>
+            <h3>ציר זמן אינטראקטיבי</h3>
+            <p>התקדמות כרונולוגית עם תחנות לימוד לפי תכנית הבגרות, כולל הקשרים היסטוריים.</p>
+            <a href="interactive-timeline.html" class="feature-link">התחילו עכשיו →</a>
+          </div>
+
+          <div class="feature-card">
+            <div class="feature-icon">📚</div>
+            <h3>נושאים לפי פרקים</h3>
+            <p>כל פרקי החובה: מיעוטים בין שתי מלחמות, משטר טוטליטרי, נאציזם, המלחמה והשואה.</p>
+            <a href="topics.html" class="feature-link">לכל הנושאים →</a>
+          </div>
+
+          <div class="feature-card">
+            <div class="feature-icon">✏️</div>
+            <h3>חידוני תרגול</h3>
+            <p>חידונים לפי פרק, יחד עם משוב מיידי והסברים כדי לזהות נקודות חלשות.</p>
+            <a href="quizzes.html" class="feature-link">לתרגול מהיר →</a>
+          </div>
+
+          <div class="feature-card">
+            <div class="feature-icon">📖</div>
+            <h3>חומרי לימוד</h3>
+            <p>מושגים, דמויות, צירי זמן, ושאלות חיבור – הכל מרוכז לפי תכנית הבגרות.</p>
+            <a href="study-materials.html" class="feature-link">לסיכומים →</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Quick Start Section -->
+    <section class="quick-start">
+      <div class="container">
+        <h2>מתחילים עכשיו</h2>
+        <div class="quick-start-buttons">
+          <button class="start-button" onclick="window.location.href='interactive-timeline.html'">
+            <span class="button-number">1</span>
+            היכרות עם ציר הזמן
+          </button>
+          <button class="start-button" onclick="window.location.href='topics.html'">
+            <span class="button-number">2</span>
+            מעבר על הפרקים
+          </button>
+          <button class="start-button" onclick="window.location.href='quizzes.html'">
+            <span class="button-number">3</span>
+            חידון עצמי
+          </button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="container">
+      <p>&copy; 2026 מעבדת היסטוריה. נבנה כדי לעזור לתלמידים להצליח בבגרות בהיסטוריה.</p>
+    </div>
+  </footer>
+
+  <script src="scripts/main.js"></script>
 </body>
 </html>

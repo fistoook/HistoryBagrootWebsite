@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>חידונים - מעבדת היסטוריה</title>
+  <link rel="stylesheet" href="styles/style.css">
+</head>
+
+<body dir="rtl">
+  <header class="main-header">
+    <div class="header-container">
+      <div class="logo">
+        <h1>מעבדת ההיסטוריה: מלחמת העולם והשואה</h1>
+        <p class="tagline">סיכום ברור, ציר זמן חי, וחידוני תרגול לבגרות</p>
+      </div>
+      <nav class="main-nav">
+        <ul>
+          <li><a href="index.html">בית</a></li>
+          <li><a href="interactive-timeline.html">ציר זמן אינטראקטיבי</a></li>
+          <li><a href="topics.html">נושאים לפי פרקים</a></li>
+          <li><a href="quizzes.html" class="active">חידונים</a></li>
+          <li><a href="study-materials.html">חומרי לימוד</a></li>
+          <li><a href="about.html">אודות</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="page-header">
+      <div class="container">
+        <h1>חידוני תרגול</h1>
+        <p>תרגול חכם עם משוב מיידי – כדי לזהות נקודות חלשות ולהשתפר.</p>
+      </div>
+    </section>
+
+    <div class="container">
+      <section id="quiz-selection" class="quiz-selection">
+        <h2>בחרו חידון</h2>
+        <div class="quiz-options">
+          <div class="quiz-card" onclick="startQuiz('rise-of-nazism')">
+            <h3>נאציזם ועלייה לשלטון (1933-1939)</h3>
+            <p>10 שאלות • 5-10 דקות</p>
+            <p class="difficulty">בסיסי</p>
+            <button class="btn btn-primary">התחל חידון →</button>
+          </div>
+
+          <div class="quiz-card" onclick="startQuiz('early-war')">
+            <h3>ראשית המלחמה (1939-1941)</h3>
+            <p>10 שאלות • 5-10 דקות</p>
+            <p class="difficulty">בסיסי</p>
+            <button class="btn btn-primary">התחל חידון →</button>
+          </div>
+
+          <div class="quiz-card" onclick="startQuiz('global-conflict')">
+            <h3>המלחמה העולמית (1941-1944)</h3>
+            <p>12 שאלות • 10-15 דקות</p>
+            <p class="difficulty">ביניים</p>
+            <button class="btn btn-primary">התחל חידון →</button>
+          </div>
+
+          <div class="quiz-card" onclick="startQuiz('holocaust-end')">
+            <h3>השואה וסיום המלחמה (1944-1945)</h3>
+            <p>10 שאלות • 5-10 דקות</p>
+            <p class="difficulty">ביניים</p>
+            <button class="btn btn-primary">התחל חידון →</button>
+          </div>
+
+          <div class="quiz-card" onclick="startQuiz('key-figures')">
+            <h3>דמויות ומנהיגים מרכזיים</h3>
+            <p>15 שאלות • 10-15 דקות</p>
+            <p class="difficulty">בסיסי</p>
+            <button class="btn btn-primary">התחל חידון →</button>
+          </div>
+
+          <div class="quiz-card" onclick="startQuiz('practice-exam')">
+            <h3>מבחן תרגול מלא</h3>
+            <p>50 שאלות • 45-60 דקות</p>
+            <p class="difficulty">מתקדם</p>
+            <button class="btn btn-primary">התחל חידון →</button>
+          </div>
+        </div>
+      </section>
+
+      <section id="quiz-container" class="quiz-container" style="display: none;">
+        <div class="quiz-header">
+          <h2 id="quiz-title"></h2>
+          <div class="progress-bar">
+            <div class="progress-fill" id="progress-fill"></div>
+          </div>
+          <p id="quiz-progress"></p>
+        </div>
+
+        <form id="quiz-form">
+          <div id="questions-container">
+            <!-- Questions will be inserted here -->
+          </div>
+
+          <div class="quiz-buttons">
+            <button type="button" class="btn btn-secondary" onclick="goBackToSelection()">חזרה לבחירה</button>
+            <button type="submit" class="btn btn-primary">שליחת חידון</button>
+          </div>
+        </form>
+      </section>
+
+      <section id="results-container" style="display: none;">
+        <h2>תוצאות החידון</h2>
+        <div class="results-summary">
+          <div class="score-circle">
+            <div class="score-number" id="score-percentage">0%</div>
+            <p>הציון שלך</p>
+          </div>
+          <div class="results-details">
+            <p><strong>תשובות נכונות:</strong> <span id="correct-count">0</span> / <span id="total-count">0</span></p>
+            <p><strong>זמן:</strong> <span id="time-taken">0</span> דקות</p>
+            <p id="performance-message"></p>
+          </div>
+        </div>
+
+        <div id="detailed-results-container" style="margin-top: 30px;">
+          <!-- Detailed results will be shown here -->
+        </div>
+
+        <div class="quiz-buttons" style="margin-top: 30px;">
+          <button class="btn btn-primary" onclick="goBackToSelection()">חידון נוסף</button>
+          <button class="btn btn-secondary" onclick="window.location.href='index.html'">חזרה לבית</button>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <footer>
+    <div class="container">
+      <p>&copy; 2026 מעבדת היסטוריה. נבנה כדי לעזור לתלמידים להצליח בבגרות בהיסטוריה.</p>
+    </div>
+  </footer>
+
+  <script src="scripts/quiz-data.js"></script>
+  <script src="scripts/quizzes.js"></script>
+</body>
+</html>

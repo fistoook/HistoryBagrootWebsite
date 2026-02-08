@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ציר זמן אינטראקטיבי - מעבדת היסטוריה</title>
+  <link rel="stylesheet" href="styles/style.css">
+</head>
+
+<body dir="rtl">
+  <header class="main-header">
+    <div class="header-container">
+      <div class="logo">
+        <h1>מעבדת ההיסטוריה: מלחמת העולם והשואה</h1>
+        <p class="tagline">סיכום ברור, ציר זמן חי, וחידוני תרגול לבגרות</p>
+      </div>
+      <nav class="main-nav">
+        <ul>
+          <li><a href="index.html">בית</a></li>
+          <li><a href="interactive-timeline.html" class="active">ציר זמן אינטראקטיבי</a></li>
+          <li><a href="topics.html">נושאים לפי פרקים</a></li>
+          <li><a href="quizzes.html">חידונים</a></li>
+          <li><a href="study-materials.html">חומרי לימוד</a></li>
+          <li><a href="about.html">אודות</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="page-header">
+      <div class="container">
+        <h1>ציר זמן אינטראקטיבי לפי תכנית הבגרות</h1>
+        <p>בחרו תקופה או פרק והתקדמו בין תחנות לימוד מרכזיות: נאציזם, מלחמה ושואה.</p>
+      </div>
+    </section>
+
+    <section class="container">
+      <div class="timeline-controls">
+        <label for="timeline-filter">סינון לפי פרק:</label>
+        <select id="timeline-filter">
+          <option value="all">הכל</option>
+          <option value="1918-1939">מיעוטים בין שתי מלחמות</option>
+          <option value="totalitarian">משטר טוטליטרי</option>
+          <option value="1933-1939">נאציזם ועליית הנאצים (1933-1939)</option>
+          <option value="1939-1941">ראשית המלחמה (1939-1941)</option>
+          <option value="1941-1945">המלחמה העולמית והפתרון הסופי (1941-1945)</option>
+          <option value="post-1945">סיום המלחמה ושארית הפליטה</option>
+        </select>
+      </div>
+
+      <div class="timeline-container">
+        <div class="timeline" id="timeline">
+          <!-- Timeline items will be inserted here by JavaScript -->
+        </div>
+      </div>
+
+      <div class="event-detail" id="event-detail" style="display: none;">
+        <div class="event-detail-content">
+          <button class="close-detail" onclick="closeEventDetail()">&times;</button>
+          <h3 id="detail-title"></h3>
+          <p class="detail-date" id="detail-date"></p>
+          <p id="detail-description"></p>
+          <div id="detail-key-points"></div>
+        </div>
+      </div>
+
+      <div class="map-section">
+        <h2>מפת הקשרים ומוקדים</h2>
+        <p>אתרים מרכזיים, אזורי כיבוש ותחנות בלימוד לפי התכנית</p>
+        <div id="map-placeholder" class="map-placeholder">
+          <p>🗺️ כאן תופיע מפת למידה אינטראקטיבית עם מוקדים ואירועים מרכזיים</p>
+          <p style="font-size: 0.9em; color: #666; margin-top: 10px;">
+            אפשר לשלב בהמשך שכבות מידע, תמונות ותחנות לימוד לפי פרק.
+          </p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="container">
+      <p>&copy; 2026 מעבדת היסטוריה. נבנה כדי לעזור לתלמידים להצליח בבגרות בהיסטוריה.</p>
+    </div>
+  </footer>
+
+  <script src="scripts/timeline-data.js"></script>
+  <script src="scripts/interactive-timeline.js"></script>
+</body>
+</html>
