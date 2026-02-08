@@ -587,6 +587,18 @@ table tr:hover {
   background-color: var(--light-bg);
 }
 
+table td a {
+  color: var(--primary-color);
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.3s ease;
+}
+
+table td a:hover {
+  color: var(--accent-color);
+  text-decoration: underline;
+}
+
 /* Flashcard Styles */
 .flashcard-set {
   display: grid;
