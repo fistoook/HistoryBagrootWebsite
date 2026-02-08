@@ -377,15 +377,16 @@ body {
 .feature-card.featured::before {
   content: '⭐ המלצת האתר';
   position: absolute;
-  top: 15px;
-  right: -30px;
+  top: 20px;
+  right: 20px;
   background: linear-gradient(135deg, #2d7a5e 0%, #4a9d6f 100%);
   color: white;
-  padding: 5px 40px;
-  font-size: 0.85em;
+  padding: 6px 12px;
+  font-size: 0.8em;
   font-weight: bold;
-  transform: rotate(45deg);
+  border-radius: 6px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  transform: none;
 }
 
 .feature-card.featured:hover {
