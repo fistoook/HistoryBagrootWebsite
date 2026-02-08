@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>מדריך משתמש - מסע דרך ההיסטוריה</title>
+    <link rel="stylesheet" href="styles/style.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        }
+
+        .guide-header-nav {
+            background: white;
+            padding: 15px 0;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+        }
+
+        .guide-header-nav-content {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .guide-header-nav a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.3s ease;
+        }
+
+        .guide-header-nav a:hover {
+            color: #764ba2;
+        }
+
+        .guide-container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        }
+
+        .guide-header {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        .guide-header h1 {
+            color: #667eea;
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .guide-section {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .guide-section h2 {
+            color: #667eea;
+            font-size: 22px;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        .guide-section h3 {
+            color: #764ba2;
+            font-size: 18px;
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+
+        .guide-step {
+            background: #f9f9f9;
+            border-right: 4px solid #667eea;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 4px;
+        }
+
+        .step-number {
+            display: inline-block;
+            background: #667eea;
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            line-height: 30px;
+            text-align: center;
+            font-weight: 700;
+            margin-left: 10px;
+            margin-bottom: 10px;
+        }
+
+        .step-content {
+            margin-right: 40px;
+        }
+
+        .feature-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .feature-list li {
+            padding: 10px 0;
+            padding-right: 30px;
+            position: relative;
+        }
+
+        .feature-list li:before {
+            content: "✓";
+            position: absolute;
+            right: 0;
+            color: #4ECDC4;
+            font-weight: 700;
+            font-size: 18px;
+        }
+
+        .badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            margin: 5px;
+        }
+
+        .avatar-showcase {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .avatar-card {
+            background: #f0f4ff;
+            border: 2px solid #667eea;
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+        }
+
+        .avatar-icon-large {
+            font-size: 40px;
+            margin-bottom: 10px;
+        }
+
+        .avatar-card-name {
+            font-weight: 600;
+            color: #333;
+            font-size: 12px;
+        }
+
+        .achievement-showcase {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .achievement-item {
+            background: #f0f4ff;
+            border: 1px solid #667eea;
+            border-radius: 8px;
+            padding: 15px;
+        }
+
+        .achievement-icon-large {
+            font-size: 32px;
+            margin-bottom: 8px;
+        }
+
+        .achievement-name {
+            font-weight: 600;
+            color: #333;
+            font-size: 14px;
+            margin-bottom: 5px;
+        }
+
+        .achievement-desc {
+            font-size: 12px;
+            color: #666;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 10px 20px;
+            background: #667eea;
+            color: white;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .back-link:hover {
+            background: #764ba2;
+            transform: translateY(-2px);
+        }
+
+        @media (max-width: 768px) {
+            .avatar-showcase, .achievement-showcase {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 480px) {
+            .guide-section {
+                padding: 15px;
+            }
+
+            .avatar-showcase, .achievement-showcase {
+                grid-template-columns: 1fr;
+            }
+
+            .guide-section h2 {
+                font-size: 18px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="guide-header-nav">
+        <div class="guide-header-nav-content">
+            <a href="index.html">← חזרה לדף הבית</a>
+            <h3 style="margin: 0; color: #667eea;">מדריך משתמש</h3>
+        </div>
+    </div>
+
+    <div class="guide-container">
+        <div class="guide-header">
+            <h1>🏛️ מדריך משתמש - מסע דרך ההיסטוריה</h1>
+            <p>ברוכים הבאים לפלטפורמת הלמידה האינטראקטיבית שלנו!</p>
+        </div>
+
+        <!-- Getting Started -->
+        <div class="guide-section">
+            <h2>🚀 התחלה מהירה</h2>
+            
+            <h3>שלב 1: יצירת חשבון</h3>
+            <div class="guide-step">
+                <span class="step-number">1</span>
+                <div class="step-content">
+                    <strong>לחצו על "התחברות"</strong> בדף הבית, ואז בחרו "יצור חשבון חדש"
+                </div>
+            </div>
+
+            <div class="guide-step">
+                <span class="step-number">2</span>
+                <div class="step-content">
+                    <strong>מלאו את הפרטים שלכם:</strong>
+                    <ul style="margin-top: 10px;">
+                        <li>שם משתמש (לפחות 3 תווים)</li>
+                        <li>דוא"ל</li>
+                        <li>סיסמה (לפחות 8 תווים)</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="guide-step">
+                <span class="step-number">3</span>
+                <div class="step-content">
+                    <strong>בחרו את הדמות ההיסטורית שלכם</strong> מתוך 8 דמויות מעוררות השראה
+                </div>
+            </div>
+
+            <div class="guide-step">
+                <span class="step-number">4</span>
+                <div class="step-content">
+                    <strong>לחצו "יצור חשבון"</strong> ותהנו מהמסע שלכם!
+                </div>
+            </div>
+        </div>
+
+        <!-- Avatar System -->
+        <div class="guide-section">
+            <h2>👤 בחירת הדמות שלכם</h2>
+            <p>כל דמות היסטורית מייצגת ערכים שונים ותפקיד חשוב בהיסטוריה:</p>
+            
+            <div class="avatar-showcase">
+                <div class="avatar-card">
+                    <div class="avatar-icon-large">🎩</div>
+                    <div class="avatar-card-name">ווינסטון צ'רצ'יל<br><small>ראש ממשלה בריטי</small></div>
+                </div>
+                <div class="avatar-card">
+                    <div class="avatar-icon-large">🤠</div>
+                    <div class="avatar-card-name">פרנקלין רוזוולט<br><small>נשיא ארה"ב</small></div>
+                </div>
+                <div class="avatar-card">
+                    <div class="avatar-icon-large">🐸</div>
+                    <div class="avatar-card-name">עוזר כימי<br><small>סוכן שנתי</small></div>
+                </div>
+                <div class="avatar-card">
+                    <div class="avatar-icon-large">👨‍🔬</div>
+                    <div class="avatar-card-name">אלברט איינשטיין<br><small>פיזיקאי</small></div>
+                </div>
+                <div class="avatar-card">
+                    <div class="avatar-icon-large">🏥</div>
+                    <div class="avatar-card-name">פלורנס נייטינגל<br><small>אחות חסדים</small></div>
+                </div>
+                <div class="avatar-card">
+                    <div class="avatar-icon-large">🔢</div>
+                    <div class="avatar-card-name">אדה לאבליס<br><small>מתמטיקאית</small></div>
+                </div>
+                <div class="avatar-card">
+                    <div class="avatar-icon-large">⚔️</div>
+                    <div class="avatar-card-name">ז'אן דה ארק<br><small>גיבורת צרפת</small></div>
+                </div>
+                <div class="avatar-card">
+                    <div class="avatar-icon-large">👑</div>
+                    <div class="avatar-card-name">אוה פרון<br><small>דוכסת בהירות</small></div>
+                </div>
+            </div>
+
+            <h3>שיפור הדמות שלכם</h3>
+            <p>כשתצברו הישגים, הדמות שלכם תשתפר:</p>
+            <ul class="feature-list">
+                <li><strong>מצב התחלתי:</strong> הדמות בצורה פשוטה</li>
+                <li><strong>מסגרת כסף:</strong> הדמות עם מסגרת כסף - אחרי 1 הישג</li>
+                <li><strong>מסגרת זהב:</strong> הדמות עם מסגרת זהב - אחרי 5 הישגים</li>
+                <li><strong>כותרת מיוחדת:</strong> דמות עם זהב וכתר - אחרי השלמת 34 תחנות</li>
+            </ul>
+        </div>
+
+        <!-- Learning System -->
+        <div class="guide-section">
+            <h2>📚 מערכת הלמידה</h2>
+            
+            <h3>כיצד משתמשים במפת התחנות?</h3>
+            <div class="guide-step">
+                <span class="step-number">1</span>
+                <div class="step-content">
+                    <strong>בחרו תחנה:</strong> לחצו על תחנה בעלת הצבע הירוק (התחנה הנוכחית)
+                </div>
+            </div>
+
+            <div class="guide-step">
+                <span class="step-number">2</span>
+                <div class="step-content">
+                    <strong>קראו חומר לימוד:</strong> התעמקו בתיאור, נקודות מפתח והמשמעות ההיסטורית
+                </div>
+            </div>
+
+            <div class="guide-step">
+                <span class="step-number">3</span>
+                <div class="step-content">
+                    <strong>ענו על השאלה:</strong> תשובה נכונה = 10 נקודות ותו סימן ✓
+                </div>
+            </div>
+
+            <div class="guide-step">
+                <span class="step-number">4</span>
+                <div class="step-content">
+                    <strong>עברו לתחנה הבאה:</strong> המשיכו ב-34 התחנות כדי להשלים את המסע
+                </div>
+            </div>
+
+            <h3>📊 עקיבה אחרי ההתקדמות</h3>
+            <ul class="feature-list">
+                <li>נקודות - צברו 10 נקודות לכל תשובה נכונה</li>
+                <li>רמה - כל 100 נקודות = עלייה של רמה אחת</li>
+                <li>תחנות השלמו - עקבו כמה מתוך 34 תחנות סיימתם</li>
+                <li>תשובות נכונות - ראו כמה שאלות ענו נכון</li>
+            </ul>
+        </div>
+
+        <!-- Achievements -->
+        <div class="guide-section">
+            <h2>🏆 מערכת ההישגים</h2>
+            <p>הזכו בהישגים משמעותיים כשתצברו התקדמות ב-מסע הלמידה:</p>
+            
+            <div class="achievement-showcase">
+                <div class="achievement-item">
+                    <div class="achievement-icon-large">🌱</div>
+                    <div class="achievement-name">הכנסן צעיר</div>
+                    <div class="achievement-desc">השלמת 5 תחנות ראשונות</div>
+                </div>
+                <div class="achievement-item">
+                    <div class="achievement-icon-large">🔍</div>
+                    <div class="achievement-name">חוקר היסטוריה</div>
+                    <div class="achievement-desc">משפחתך כעת בן 10 תחנות</div>
+                </div>
+                <div class="achievement-item">
+                    <div class="achievement-icon-large">⚙️</div>
+                    <div class="achievement-name">גלגל ההיסטוריה</div>
+                    <div class="achievement-desc">הגיע ל-17 תחנות - חצי הדרך!</div>
+                </div>
+                <div class="achievement-item">
+                    <div class="achievement-icon-large">🏆</div>
+                    <div class="achievement-name">גיבור אל</div>
+                    <div class="achievement-desc">השלמת את כל 34 תחנות!</div>
+                </div>
+                <div class="achievement-item">
+                    <div class="achievement-icon-large">⭐</div>
+                    <div class="achievement-name">זומן של הידע</div>
+                    <div class="achievement-desc">צברת 100 נקודות</div>
+                </div>
+                <div class="achievement-item">
+                    <div class="achievement-icon-large">💯</div>
+                    <div class="achievement-name">תשובה מושלמת</div>
+                    <div class="achievement-desc">ענית נכון ל-30 שאלות</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Profile -->
+        <div class="guide-section">
+            <h2>👥 פרופיל המשתמש שלי</h2>
+            <p>בחלק "פרופיל" תוכלו לראות:</p>
+            <ul class="feature-list">
+                <li>את הדמות שלכם עם כל ההשיפורים שלה</li>
+                <li>הנקודות הכוללות והרמה הנוכחית שלכם</li>
+                <li>כמה תחנות כבר סיימתם</li>
+                <li>כל ההישגים שלכם (בין משורים לבין לא משורים)</li>
+                <li>סטטיסטיקות ציוני זיכרון ויום כניסה אחרון</li>
+            </ul>
+        </div>
+
+        <!-- Tips -->
+        <div class="guide-section">
+            <h2>💡 טיפים ללימוד יעיל</h2>
+            <ul class="feature-list">
+                <li>קחו זמנכם בכל תחנה - אתם לא צריכים להשלים הכל ביום אחד</li>
+                <li>בחנו את הנושאים בתוך המפה לקבלת הקשר ההיסטורי הרחב</li>
+                <li>כתבו הערות על נקודות מפתח כדי לחזק את הזיכרון שלכם</li>
+                <li>בקרו בדף הפרופיל שלכם כדי לעקוב אחרי ההתקדמות שלכם</li>
+                <li>השלימו את המפה, ואז נסו את החידונים כדי לבדוק את הידע שלכם</li>
+                <li>בחנו את הרצף הכרונולוגי והקשרים בין אירועים בעזרת המפה</li>
+            </ul>
+        </div>
+
+        <!-- FAQ -->
+        <div class="guide-section">
+            <h2>❓ שאלות נפוצות</h2>
+            
+            <h3>איך אני יכול לשחזר סיסמה שנשכחה?</h3>
+            <p>צרו חשבון חדש עם שם משתמש שונה. הצטברות הנקודות תישמרו לאחר כניסה עם שם המשתמש החדש.</p>
+
+            <h3>איך אוכל לשנות את הדמות שלי?</h3>
+            <p>הדמות שבחרתם לא יכולה להשתנות, לכן בחרו בזהירות!</p>
+
+            <h3>אם נשכחתי את הסיסמה שלי, האם אוכל להמשיך ללמוד?</h3>
+            <p>לחצו על "נסה את המפה" כדי לנסות את הלמידה בלי צורך בחשבון.</p>
+
+            <h3>האם ההתקדמות שלי תישמר?</h3>
+            <p>כן! כל התקדמות שלכם נשמרת בחשבון שלכם. כשתחזרו, ההתקדמות שלכם תהיה זהה לפעם האחרונה.</p>
+        </div>
+
+        <a href="index.html" class="back-link">← חזרה לדף הבית</a>
+    </div>
+</body>
+</html>
