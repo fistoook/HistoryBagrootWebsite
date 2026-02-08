@@ -802,7 +802,213 @@ table td a:hover {
   text-decoration: underline;
 }
 
-/* Flashcard Styles */
+/* Timeline Map Styles */
+.timeline-map-intro {
+  text-align: center;
+  margin: 40px 0;
+}
+
+.timeline-map-intro h2 {
+  color: var(--primary-color);
+  margin-bottom: 10px;
+}
+
+.timeline-map-intro p {
+  color: var(--text-light);
+  font-size: 1.1em;
+}
+
+.map-container {
+  margin: 40px 0;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+  background: #f5f5f5;
+}
+
+.europe-map-wrapper {
+  position: relative;
+  width: 100%;
+  padding-bottom: 66.67%;
+  background: #e8f5f0;
+}
+
+.europe-map {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.stations-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 10;
+}
+
+.station-marker {
+  position: absolute;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 1.1em;
+  transition: all 0.3s ease;
+  border: 3px solid white;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.station-marker.locked {
+  background: #ccc;
+  color: white;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.station-marker.unlocked {
+  background: var(--secondary-color);
+  color: white;
+  cursor: pointer;
+}
+
+.station-marker.unlocked:hover {
+  transform: scale(1.15);
+  box-shadow: 0 4px 12px rgba(74, 157, 111, 0.4);
+}
+
+.station-marker.active {
+  background: var(--primary-color);
+  transform: scale(1.2);
+  box-shadow: 0 0 20px rgba(74, 157, 111, 0.6);
+}
+
+.station-detail-card {
+  background: white;
+  border-radius: 12px;
+  padding: 30px;
+  margin: 40px 0;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+  border-left: 5px solid var(--primary-color);
+}
+
+.station-detail-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.station-detail-header h3 {
+  color: var(--primary-color);
+  font-size: 1.8em;
+  margin: 0;
+}
+
+.station-number {
+  background: var(--secondary-color);
+  color: var(--primary-color);
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-weight: bold;
+  margin: 0;
+}
+
+.station-date {
+  color: var(--accent-color);
+  font-size: 1.1em;
+  font-weight: 600;
+  margin-bottom: 15px;
+}
+
+.station-description {
+  font-size: 1em;
+  line-height: 1.8;
+  color: var(--text-dark);
+  margin-bottom: 20px;
+}
+
+.station-key-points {
+  background: var(--light-bg);
+  padding: 15px;
+  border-radius: 8px;
+  margin: 20px 0;
+}
+
+.station-key-points ul {
+  list-style: none;
+  padding: 0;
+}
+
+.station-key-points li {
+  padding: 8px 0;
+  padding-right: 20px;
+  color: var(--text-dark);
+  position: relative;
+}
+
+.station-key-points li:before {
+  content: "▸";
+  position: absolute;
+  right: 0;
+  color: var(--primary-color);
+  font-size: 1.2em;
+}
+
+.station-buttons {
+  display: flex;
+  gap: 15px;
+  margin-top: 25px;
+  justify-content: flex-start;
+}
+
+.progress-section {
+  margin: 40px 0;
+  padding: 20px;
+  background: var(--light-bg);
+  border-radius: 12px;
+}
+
+.progress-section h3 {
+  color: var(--primary-color);
+  margin-bottom: 15px;
+}
+
+.progress-bar {
+  width: 100%;
+  height: 30px;
+  background: white;
+  border-radius: 15px;
+  overflow: hidden;
+  margin-bottom: 10px;
+  border: 2px solid var(--border-color);
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--secondary-color), var(--primary-color));
+  transition: width 0.5s ease;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding-right: 10px;
+  color: white;
+  font-weight: bold;
+  font-size: 0.9em;
+}
+
+#progress-text {
+  color: var(--text-light);
+  text-align: center;
+}
 .flashcard-set {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -870,4 +1076,364 @@ table td a:hover {
 .flashcard:hover .flashcard-front,
 .flashcard:hover .flashcard-back {
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+}
+/* Interactive Timeline Map Styles */
+#mapContainer {
+  width: 100%;
+  max-width: 1200px;
+  margin: 30px auto;
+  padding: 20px;
+}
+
+.map-legend {
+  background: linear-gradient(135deg, #f0f8f4 0%, #e8f5ef 100%);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 15px 20px;
+  margin-bottom: 25px;
+  box-shadow: 0 2px 8px rgba(74, 157, 111, 0.08);
+}
+
+.map-legend h3 {
+  font-size: 1.2em;
+  color: var(--accent-color);
+  margin-bottom: 12px;
+  text-align: right;
+}
+
+.legend-items {
+  display: flex;
+  gap: 30px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.95em;
+  color: var(--text-dark);
+}
+
+.legend-marker {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.legend-marker.locked {
+  background-color: #ccc;
+  opacity: 0.4;
+}
+
+.legend-marker.current {
+  background-color: var(--accent-color);
+  box-shadow: 0 0 8px rgba(45, 122, 94, 0.5);
+}
+
+.legend-marker.completed {
+  background-color: var(--success-color);
+}
+
+.timeline-map {
+  width: 100%;
+  height: auto;
+  max-width: 100%;
+  border: 2px solid var(--border-color);
+  border-radius: 8px;
+  background: linear-gradient(135deg, #fafbfa 0%, #f5f8f6 100%);
+  box-shadow: 0 4px 12px rgba(74, 157, 111, 0.1);
+  margin-bottom: 30px;
+}
+
+.station-marker circle {
+  transition: all 0.3s ease;
+}
+
+.station-marker.completed circle:first-child {
+  fill: var(--success-color);
+}
+
+.station-marker.current circle:first-child {
+  fill: var(--accent-color);
+  filter: drop-shadow(0 0 6px rgba(45, 122, 94, 0.6));
+}
+
+.station-marker.locked {
+  opacity: 0.4;
+  cursor: not-allowed !important;
+}
+
+.station-marker:not(.locked):hover circle:first-child {
+  r: 2.8;
+  filter: drop-shadow(0 0 8px rgba(45, 122, 94, 0.5));
+}
+
+@keyframes pulse {
+  0% {
+    r: 2.5;
+    opacity: 1;
+    stroke-width: 0.5;
+  }
+  100% {
+    r: 5;
+    opacity: 0;
+    stroke-width: 0;
+  }
+}
+
+.pulse-ring {
+  animation: pulse 1.5s ease-out infinite;
+}
+
+.station-path {
+  opacity: 0.6;
+}
+
+.map-info-panel {
+  background: linear-gradient(135deg, #ffffff 0%, #f0f8f4 100%);
+  border: 2px solid var(--border-color);
+  border-radius: 8px;
+  padding: 30px;
+  margin: 30px 0;
+  max-width: 100%;
+  box-shadow: 0 4px 12px rgba(74, 157, 111, 0.1);
+  min-height: 400px;
+}
+
+.station-info-content h2 {
+  color: var(--accent-color);
+  margin-bottom: 10px;
+  font-size: 1.6em;
+  line-height: 1.4;
+}
+
+.station-date {
+  color: var(--text-light);
+  font-size: 0.95em;
+  margin-bottom: 15px;
+  font-weight: 500;
+}
+
+.station-description {
+  color: var(--text-dark);
+  font-size: 1em;
+  margin-bottom: 20px;
+  line-height: 1.7;
+}
+
+.station-key-points h4 {
+  color: var(--accent-color);
+  margin: 20px 0 12px 0;
+  font-size: 1.05em;
+}
+
+.station-key-points .key-points-list {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 20px 0;
+}
+
+.station-key-points .key-points-list li {
+  padding: 8px 0 8px 24px;
+  position: relative;
+  color: var(--text-dark);
+  line-height: 1.6;
+}
+
+.station-key-points .key-points-list li:before {
+  content: "•";
+  position: absolute;
+  left: 8px;
+  color: var(--primary-color);
+  font-weight: bold;
+}
+
+.significance {
+  background: rgba(74, 157, 111, 0.08);
+  padding: 15px;
+  border-right: 4px solid var(--primary-color);
+  border-radius: 4px;
+  color: var(--text-dark);
+  margin: 20px 0;
+  font-size: 0.95em;
+  line-height: 1.6;
+}
+
+.significance strong {
+  color: var(--accent-color);
+}
+
+.complete-button {
+  background: linear-gradient(135deg, var(--primary-color) 0%, var(--accent-color) 100%);
+  color: white;
+  border: none;
+  padding: 14px 30px;
+  border-radius: 6px;
+  font-size: 1em;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 20px;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(45, 122, 94, 0.3);
+}
+
+.complete-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(45, 122, 94, 0.4);
+}
+
+.complete-button:active {
+  transform: translateY(0);
+}
+
+.station-status {
+  margin-top: 15px;
+  padding: 12px 15px;
+  border-radius: 4px;
+  font-size: 0.95em;
+  font-weight: 500;
+}
+
+.status-unlock {
+  background-color: rgba(255, 193, 7, 0.1);
+  color: #f57f17;
+  display: block;
+  padding: 12px 15px;
+  border-radius: 4px;
+  border-right: 4px solid #f57f17;
+}
+
+.status-completed {
+  background-color: rgba(82, 183, 136, 0.1);
+  color: var(--success-color);
+  display: block;
+  padding: 12px 15px;
+  border-radius: 4px;
+  border-right: 4px solid var(--success-color);
+}
+
+.status-locked {
+  background-color: rgba(200, 200, 200, 0.1);
+  color: var(--text-light);
+  display: block;
+  padding: 12px 15px;
+  border-radius: 4px;
+  border-right: 4px solid #ccc;
+}
+
+.progress-bar {
+  width: 100%;
+  max-width: 600px;
+  height: 30px;
+  background: var(--light-bg);
+  border: 2px solid var(--border-color);
+  border-radius: 15px;
+  overflow: hidden;
+  margin: 20px auto;
+  position: relative;
+  box-shadow: 0 2px 8px rgba(74, 157, 111, 0.1);
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+  width: 0%;
+  transition: width 0.6s ease;
+  border-radius: 13px;
+}
+
+.progress-text {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-weight: 600;
+  color: var(--accent-color);
+  font-size: 0.95em;
+  z-index: 10;
+}
+
+.reset-button {
+  background: var(--warning-color);
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  font-size: 0.9em;
+  font-weight: 600;
+  cursor: pointer;
+  margin: 10px;
+  transition: all 0.3s ease;
+}
+
+.reset-button:hover {
+  background: #c0392b;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(231, 76, 60, 0.3);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .map-legend {
+    padding: 12px 15px;
+  }
+
+  .legend-items {
+    flex-direction: column;
+    gap: 12px;
+    justify-content: flex-end;
+  }
+
+  .legend-item {
+    font-size: 0.85em;
+  }
+
+  .map-info-panel {
+    padding: 20px;
+    min-height: auto;
+  }
+
+  .station-info-content h2 {
+    font-size: 1.4em;
+  }
+
+  .progress-bar {
+    max-width: 100%;
+  }
+
+  .timeline-map {
+    min-height: 400px;
+  }
+}
+
+@media (max-width: 480px) {
+  .map-legend h3 {
+    font-size: 1em;
+  }
+
+  .legend-item {
+    font-size: 0.75em;
+    gap: 6px;
+  }
+
+  .legend-marker {
+    width: 12px;
+    height: 12px;
+  }
+
+  .station-info-content h2 {
+    font-size: 1.2em;
+  }
+
+  .station-description {
+    font-size: 0.9em;
+  }
+
+  .complete-button {
+    padding: 12px 20px;
+    font-size: 0.9em;
+  }
 }

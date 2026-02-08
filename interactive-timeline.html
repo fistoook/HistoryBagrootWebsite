@@ -14,6 +14,7 @@
         <ul>
           <li><a href="index.html">בית</a></li>
           <li><a href="interactive-timeline.html" class="active">ציר זמן אינטראקטיבי</a></li>
+          <li><a href="timeline-map.html">מפת התחנות</a></li>
           <li><a href="topics.html">נושאים לפי פרקים</a></li>
           <li><a href="quizzes.html">חידונים</a></li>
           <li><a href="study-materials.html">חומרי לימוד</a></li>
@@ -65,13 +66,17 @@
       </div>
 
       <div class="map-section">
-        <h2>מפת הקשרים ומוקדים</h2>
-        <p>אתרים מרכזיים, אזורי כיבוש ותחנות בלימוד לפי התכנית</p>
-        <div id="map-placeholder" class="map-placeholder">
-          <p>🗺️ כאן תופיע מפת למידה אינטראקטיבית עם מוקדים ואירועים מרכזיים</p>
-          <p style="font-size: 0.9em; color: #666; margin-top: 10px;">
-            אפשר לשלב בהמשך שכבות מידע, תמונות ותחנות לימוד לפי פרק.
-          </p>
+        <h2>ציר הזמן האינטראקטיבי - התחנות המרכזיות</h2>
+        <p>עברו דרך כל התחנות לפי הסדר. קרא אודות כל תחנה לפני שתוכלו להמשיך לתחנה הבאה.</p>
+        <div class="map-container">
+          <div class="map-wrapper" id="mapWrapper">
+            <svg class="map-overlay" viewBox="0 0 1000 700" preserveAspectRatio="xMidYMid meet" id="mapSvg">
+              <!-- Map background - will be styled -->
+            </svg>
+          </div>
+          <div class="stations-container" id="stationsContainer">
+            <!-- Stations will be generated here by JavaScript -->
+          </div>
         </div>
       </div>
     </section>
