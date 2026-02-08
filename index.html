@@ -20,6 +20,15 @@
           <li><a href="about.html">אודות</a></li>
         </ul>
       </nav>
+      <div id="userProfileHeader" style="display: none;">
+        <a href="profile.html" class="profile-link">
+          <span id="userProfileIcon">👤</span>
+          <span id="userProfileName">משתמש</span>
+        </a>
+      </div>
+      <div id="authButtons" style="display: none; gap: 10px; display: flex;">
+        <a href="auth.html" class="cta-button" style="padding: 8px 16px; font-size: 14px; margin: 0;">התחברות</a>
+      </div>
       <a href="index.html" class="logo-link">
         <img src="images/pazthehistorybagroot-high-resolution-logo-transparent.png" alt="PaztheHistoryBagroot" class="header-logo">
       </a>
@@ -106,6 +115,28 @@
     </div>
   </footer>
 
+  <script src="scripts/user-system.js"></script>
   <script src="scripts/main.js"></script>
+  <script>
+    // Display user profile on homepage
+    document.addEventListener('DOMContentLoaded', function() {
+      const user = userSystem ? userSystem.getCurrentUser() : null;
+      const userProfileHeader = document.getElementById('userProfileHeader');
+      const authButtons = document.getElementById('authButtons');
+
+      if (user) {
+        const figure = HISTORICAL_FIGURES.find(f => f.id === user.avatar);
+        document.getElementById('userProfileName').textContent = user.username;
+        if (figure) {
+          document.getElementById('userProfileIcon').textContent = figure.icon;
+        }
+        userProfileHeader.style.display = 'flex';
+        authButtons.style.display = 'none';
+      } else {
+        userProfileHeader.style.display = 'none';
+        authButtons.style.display = 'flex';
+      }
+    });
+  </script>
 </body>
 </html>

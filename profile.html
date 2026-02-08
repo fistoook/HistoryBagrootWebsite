@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>פרופיל - מסע דרך ההיסטוריה</title>
+    <link rel="stylesheet" href="styles/style.css">
+    <style>
+        .profile-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        }
+
+        .profile-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .profile-logo {
+            font-size: 28px;
+            font-weight: 700;
+            color: #333;
+        }
+
+        .profile-nav {
+            display: flex;
+            gap: 10px;
+        }
+
+        .profile-nav a {
+            padding: 8px 16px;
+            background: #667eea;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .profile-nav a:hover {
+            background: #764ba2;
+            transform: translateY(-2px);
+        }
+
+        .profile-main {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 20px;
+        }
+
+        .profile-card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .avatar-profile {
+            text-align: center;
+        }
+
+        .avatar-display {
+            width: 150px;
+            height: 150px;
+            margin: 0 auto 20px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 80px;
+            position: relative;
+            border: 4px solid white;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        .avatar-display.with-frame::after {
+            content: '';
+            position: absolute;
+            top: -8px;
+            left: -8px;
+            right: -8px;
+            bottom: -8px;
+            border-radius: 50%;
+            border: 4px solid;
+            border-color: #bb8a3f;
+            box-sizing: border-box;
+        }
+
+        .avatar-display.with-crown::before {
+            content: '👑';
+            position: absolute;
+            top: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 40px;
+        }
+
+        .avatar-name {
+            font-size: 24px;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .avatar-title {
+            font-size: 14px;
+            color: #999;
+            margin-bottom: 20px;
+        }
+
+        .user-info {
+            text-align: right;
+            font-size: 14px;
+        }
+
+        .user-info-item {
+            margin-bottom: 10px;
+            color: #666;
+        }
+
+        .user-info-label {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .stat-box {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            opacity: 0.9;
+        }
+
+        .progress-section {
+            margin-top: 20px;
+        }
+
+        .progress-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 14px;
+            color: #333;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 12px;
+            background: #e0e0e0;
+            border-radius: 6px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            transition: width 0.3s ease;
+        }
+
+        .section-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #667eea;
+        }
+
+        .achievements-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+        }
+
+        .achievement-card {
+            background: #f9f9f9;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .achievement-card.unlocked {
+            background: linear-gradient(135deg, #gold 0%, #FFD700 100%);
+            border-color: #FF8C00;
+            box-shadow: 0 5px 15px rgba(255, 140, 0, 0.3);
+        }
+
+        .achievement-card.locked {
+            opacity: 0.5;
+            background: #f0f0f0;
+        }
+
+        .achievement-icon {
+            font-size: 40px;
+            margin-bottom: 10px;
+        }
+
+        .achievement-name {
+            font-weight: 600;
+            font-size: 14px;
+            margin-bottom: 5px;
+            color: #333;
+        }
+
+        .achievement-card.unlocked .achievement-name {
+            color: #1a1a1a;
+        }
+
+        .achievement-description {
+            font-size: 12px;
+            color: #999;
+        }
+
+        .achievement-card.unlocked .achievement-description {
+            color: #1a1a1a;
+            opacity: 0.8;
+        }
+
+        .logout-btn {
+            width: 100%;
+            padding: 12px;
+            background: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .logout-btn:hover {
+            background: #c0392b;
+            transform: translateY(-2px);
+        }
+
+        .streak-counter {
+            background: linear-gradient(135deg, #FF6B6B 0%, #FF8E72 100%);
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            margin-top: 15px;
+        }
+
+        .streak-number {
+            font-size: 28px;
+            font-weight: 700;
+        }
+
+        .streak-label {
+            font-size: 12px;
+            opacity: 0.9;
+        }
+
+        @media (max-width: 768px) {
+            .profile-main {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .achievements-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .profile-header {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+
+            .profile-nav {
+                width: 100%;
+            }
+
+            .profile-nav a {
+                flex: 1;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .profile-container {
+                padding: 10px;
+            }
+
+            .profile-card {
+                padding: 15px;
+            }
+
+            .achievements-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .avatar-display {
+                width: 120px;
+                height: 120px;
+                font-size: 60px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="profile-container">
+        <div class="profile-header">
+            <div class="profile-logo">🏛️ מסע היסטורי</div>
+            <div class="profile-nav">
+                <a href="timeline-map.html">חזור למפה</a>
+                <a href="index.html">דף הבית</a>
+            </div>
+        </div>
+
+        <div class="profile-main">
+            <!-- Left: Avatar Profile -->
+            <div class="profile-card avatar-profile">
+                <div id="avatarDisplay" class="avatar-display"></div>
+                <div id="avatarName" class="avatar-name"></div>
+                <div id="avatarTitle" class="avatar-title"></div>
+
+                <div class="user-info">
+                    <div class="user-info-item">
+                        <span class="user-info-label">שם משתמש:</span><br>
+                        <span id="username"></span>
+                    </div>
+                    <div class="user-info-item">
+                        <span class="user-info-label">דוא"ל:</span><br>
+                        <span id="email"></span>
+                    </div>
+                    <div class="user-info-item">
+                        <span class="user-info-label">הצטרפות:</span><br>
+                        <span id="joinDate"></span>
+                    </div>
+                </div>
+
+                <div class="streak-counter">
+                    <div class="streak-number" id="streakDays">0</div>
+                    <div class="streak-label">🔥 ימי למידה רציפים</div>
+                </div>
+
+                <button class="logout-btn" onclick="logout()">התנתק</button>
+            </div>
+
+            <!-- Right: Stats and Achievements -->
+            <div>
+                <!-- Stats Section -->
+                <div class="profile-card">
+                    <div class="section-title">📊 הסטטיסטיקה שלך</div>
+
+                    <div class="stats-grid">
+                        <div class="stat-box">
+                            <div class="stat-value" id="totalPoints">0</div>
+                            <div class="stat-label">נקודות</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-value" id="currentLevel">1</div>
+                            <div class="stat-label">רמה</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-value" id="correctAnswers">0</div>
+                            <div class="stat-label">תשובות נכונות</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-value" id="completedStations">0</div>
+                            <div class="stat-label">תחנות שהושלמו</div>
+                        </div>
+                    </div>
+
+                    <div class="progress-section">
+                        <div class="progress-label">
+                            <span>התקדמות לרמה הבאה</span>
+                            <span id="xpText">0/100 XP</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="xpProgress" style="width: 0%"></div>
+                        </div>
+                    </div>
+
+                    <div class="progress-section">
+                        <div class="progress-label">
+                            <span>התקדמות בהיסטוריה</span>
+                            <span id="stationPercentage">0%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="stationProgress" style="width: 0%"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Achievements Section -->
+                <div class="profile-card" style="margin-top: 20px;">
+                    <div class="section-title">🏆 ההישגים שלך</div>
+                    <div class="achievements-grid" id="achievementsGrid"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="scripts/user-system.js"></script>
+    <script>
+        const user = userSystem.getCurrentUser();
+
+        if (!user) {
+            window.location.href = 'auth.html';
+        }
+
+        // Find selected avatar info
+        const selectedFigure = HISTORICAL_FIGURES.find(f => f.id === user.avatar);
+
+        // Display avatar profile
+        const avatarDisplay = document.getElementById('avatarDisplay');
+        if (selectedFigure) {
+            avatarDisplay.textContent = selectedFigure.icon;
+            if (user.avatarFrame !== 'none') {
+                avatarDisplay.classList.add('with-frame');
+            }
+            if (user.avatarCrown) {
+                avatarDisplay.classList.add('with-crown');
+            }
+        }
+
+        document.getElementById('avatarName').textContent = user.username;
+        document.getElementById('avatarTitle').textContent = user.avatarTitle || selectedFigure?.title || '';
+
+        // Display user info
+        document.getElementById('username').textContent = user.username;
+        document.getElementById('email').textContent = user.email;
+        document.getElementById('joinDate').textContent = new Date(user.createdDate).toLocaleDateString('he-IL');
+        document.getElementById('streakDays').textContent = user.statistics.streakDays || 0;
+
+        // Display stats
+        document.getElementById('totalPoints').textContent = user.points;
+        document.getElementById('currentLevel').textContent = user.level;
+        document.getElementById('correctAnswers').textContent = user.correctAnswers;
+        document.getElementById('completedStations').textContent = user.completedStations.length;
+
+        // Update progress bars
+        const xpInLevel = user.points % 100;
+        document.getElementById('xpProgress').style.width = xpInLevel + '%';
+        document.getElementById('xpText').textContent = xpInLevel + '/100 XP';
+
+        const stationPercentage = Math.round((user.completedStations.length / 34) * 100);
+        document.getElementById('stationProgress').style.width = stationPercentage + '%';
+        document.getElementById('stationPercentage').textContent = stationPercentage + '%';
+
+        // Display achievements
+        const achievementsGrid = document.getElementById('achievementsGrid');
+        Object.entries(ACHIEVEMENTS_SYSTEM).forEach(([key, achievement]) => {
+            const isUnlocked = user.achievements.includes(key);
+            const card = document.createElement('div');
+            card.className = `achievement-card ${isUnlocked ? 'unlocked' : 'locked'}`;
+            card.innerHTML = `
+                <div class="achievement-icon">${achievement.icon}</div>
+                <div class="achievement-name">${achievement.name}</div>
+                <div class="achievement-description">${achievement.description}</div>
+            `;
+            achievementsGrid.appendChild(card);
+        });
+
+        function logout() {
+            if (confirm('האם אתה בטוח שברצונך להתנתק?')) {
+                userSystem.logout();
+            }
+        }
+    </script>
+</body>
+</html>

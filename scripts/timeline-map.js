@@ -3,15 +3,23 @@
 
 class EuropeTimelineMap {
   constructor(containerId, dataArray) {
+    // Check if user is logged in
+    this.user = userSystem ? userSystem.getCurrentUser() : null;
+    if (!this.user) {
+      // Redirect to auth if no user logged in
+      window.location.href = 'auth.html';
+      return;
+    }
+
     this.container = document.getElementById(containerId);
     this.data = dataArray;
-    this.completedStations = new Set(JSON.parse(localStorage.getItem('completedStations') || '[]'));
+    this.completedStations = new Set(this.user.completedStations || []);
     this.currentStation = parseInt(localStorage.getItem('currentStation') || '1');
     
-    // Gamification system
-    this.points = parseInt(localStorage.getItem('mapPoints') || '0');
-    this.achievements = new Set(JSON.parse(localStorage.getItem('mapAchievements') || '[]'));
-    this.correctAnswers = parseInt(localStorage.getItem('correctAnswers') || '0');
+    // Use user system for gamification
+    this.points = this.user.points || 0;
+    this.achievements = new Set(this.user.achievements || []);
+    this.correctAnswers = this.user.correctAnswers || 0;
     
     // Adjust viewBox to match typical map proportions
     this.mapViewBox = { x: 0, y: 0, width: 100, height: 80 };
@@ -24,6 +32,19 @@ class EuropeTimelineMap {
     this.renderStations();
     this.renderConnectingPath();
     this.attachEventListeners();
+    this.displayUserProfile();
+  }
+
+  displayUserProfile() {
+    const profileHeader = document.getElementById('userProfileHeader');
+    if (profileHeader && this.user) {
+      const figure = HISTORICAL_FIGURES.find(f => f.id === this.user.avatar);
+      document.getElementById('userProfileName').textContent = this.user.username;
+      if (figure) {
+        document.getElementById('userProfileIcon').textContent = figure.icon;
+      }
+      profileHeader.style.display = 'flex';
+    }
   }
 
   createMapStructure() {
@@ -485,6 +506,12 @@ class EuropeTimelineMap {
       this.correctAnswers++;
       localStorage.setItem('correctAnswers', this.correctAnswers.toString());
       
+      // Update user system
+      if (this.user && userSystem) {
+        this.user.correctAnswers = this.correctAnswers;
+        userSystem.updateUser({ correctAnswers: this.correctAnswers });
+      }
+      
       quizFeedback.innerHTML = `כל הכבוד! תשובה נכונה ✓<br><span class="points-animation">+${pointsAwarded} נקודות!</span>`;
       quizFeedback.className = 'quiz-feedback success';
       
@@ -527,6 +554,12 @@ class EuropeTimelineMap {
 
     this.completedStations.add(stationId);
     localStorage.setItem('completedStations', JSON.stringify(Array.from(this.completedStations)));
+    
+    // Update user system
+    if (this.user && userSystem) {
+      const completedList = Array.from(this.completedStations);
+      userSystem.updateUser({ completedStations: completedList });
+    }
 
     // Move to next station
     const nextStation = this.data.find(s => s.id === stationId + 1);
@@ -584,6 +617,12 @@ class EuropeTimelineMap {
   awardPoints(amount) {
     this.points += amount;
     localStorage.setItem('mapPoints', this.points.toString());
+    
+    // Update user system if available
+    if (this.user && userSystem) {
+      userSystem.addPoints(amount);
+    }
+    
     this.updateStatsDisplay();
     this.checkAchievements();
   }
@@ -594,18 +633,24 @@ class EuropeTimelineMap {
 
   checkAchievements() {
     const achievements = [
-      { id: 'first_5', name: 'התחלה טובה! 🌟', condition: this.completedStations.size >= 5 },
-      { id: 'first_10', name: 'בדרך הנכונה! 🎯', condition: this.completedStations.size >= 10 },
-      { id: 'halfway', name: 'חצי דרך! 🏃', condition: this.completedStations.size >= 17 },
-      { id: 'champion', name: 'גיבור הלמידה! 🏆', condition: this.completedStations.size === 34 },
-      { id: 'points_100', name: 'צובר נקודות! 💯', condition: this.points >= 100 },
-      { id: 'perfect', name: 'מושלם! ⭐', condition: this.correctAnswers >= 30 }
+      { id: 'first_5', name: 'הכנסן צעיר 🌱', condition: this.completedStations.size >= 5 },
+      { id: 'first_10', name: 'חוקר היסטוריה 🔍', condition: this.completedStations.size >= 10 },
+      { id: 'halfway', name: 'גלגל ההיסטוריה ⚙️', condition: this.completedStations.size >= 17 },
+      { id: 'champion', name: 'גיבור אל 🏆', condition: this.completedStations.size === 34 },
+      { id: 'points_100', name: 'זומן של הידע ⭐', condition: this.points >= 100 },
+      { id: 'perfect', name: 'תשובה מושלמת 💯', condition: this.correctAnswers >= 30 }
     ];
 
     achievements.forEach(ach => {
       if (ach.condition && !this.achievements.has(ach.id)) {
         this.achievements.add(ach.id);
         localStorage.setItem('mapAchievements', JSON.stringify(Array.from(this.achievements)));
+        
+        // Update user system if available
+        if (this.user && userSystem) {
+          userSystem.addAchievement(ach.id);
+        }
+        
         this.showAchievementBadge(ach.name);
       }
     });
