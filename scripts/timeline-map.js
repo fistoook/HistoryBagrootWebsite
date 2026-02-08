@@ -124,8 +124,8 @@ class EuropeTimelineMap {
     image.setAttribute('width', '100');
     image.setAttribute('height', '80');
     // Use both xlink:href (for better compatibility) and href
-    image.setAttribute('href', 'images/Nazi_Germany.png');
-    image.setAttributeNS('http://www.w3.org/1999/xlink', 'href', 'images/Nazi_Germany.png');
+    image.setAttribute('href', 'images/Nazi_Germany.svg.png');
+    image.setAttributeNS('http://www.w3.org/1999/xlink', 'href', 'images/Nazi_Germany.svg.png');
     image.setAttribute('preserveAspectRatio', 'xMidYMid slice');
     svg.appendChild(image);
 
