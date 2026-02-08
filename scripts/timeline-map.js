@@ -124,8 +124,8 @@ class EuropeTimelineMap {
     image.setAttribute('width', '100');
     image.setAttribute('height', '80');
     // Use both xlink:href (for better compatibility) and href
-    image.setAttribute('href', 'images/map.jpg');
-    image.setAttributeNS('http://www.w3.org/1999/xlink', 'href', 'images/map.jpg');
+    image.setAttribute('href', 'images/map.gif');
+    image.setAttributeNS('http://www.w3.org/1999/xlink', 'href', 'images/map.gif');
     image.setAttribute('preserveAspectRatio', 'xMidYMid slice');
     svg.appendChild(image);
 
@@ -180,15 +180,29 @@ class EuropeTimelineMap {
     this.container.appendChild(infoPanel);
   }
 
-  projectCoords(lat, lon) {
-    // Map actual coordinates to viewBox percentages
-    // Latitude range: 30 to 67 (maps to viewBox 0-80)
-    // Longitude range: -9 to 41 (maps to viewBox 0-100)
-    const latMin = 30, latMax = 67;
-    const lonMin = -9, lonMax = 41;
+  projectCoords(lat, lon, stationId) {
+    // Create a timeline path: stations progress left to right chronologically
+    // with a wave pattern (ups and downs) for visual interest
     
-    const x = ((lon - lonMin) / (lonMax - lonMin)) * 100;
-    const y = ((latMax - lat) / (latMax - latMin)) * 80; // inverted because SVG y increases downward
+    // Total stations: 34
+    // Distribute across viewBox width (0-100) with padding
+    const totalStations = this.data.length;
+    const xStart = 5;  // Start 5% from left
+    const xEnd = 95;   // End 95% from right
+    const xRange = xEnd - xStart;
+    
+    // Position along timeline based on station ID
+    const stationIndex = stationId - 1; // Convert 1-based to 0-based
+    const x = xStart + (stationIndex / (totalStations - 1)) * xRange;
+    
+    // Create wave pattern using sine function
+    // Oscillate between y values 20 and 60 with 3 complete waves
+    const yMin = 20;
+    const yMax = 60;
+    const yMid = (yMin + yMax) / 2;
+    const yAmplitude = (yMax - yMin) / 2;
+    const waveCount = 3; // Number of complete sine waves
+    const y = yMid + yAmplitude * Math.sin((stationIndex / (totalStations - 1)) * waveCount * Math.PI * 2);
     
     return { x: Math.max(0, Math.min(100, x)), y: Math.max(0, Math.min(80, y)) };
   }
@@ -209,7 +223,7 @@ class EuropeTimelineMap {
 
     this.data.forEach((station, index) => {
       if (station.mapCoords) {
-        const proj = this.projectCoords(station.mapCoords[0], station.mapCoords[1]);
+        const proj = this.projectCoords(station.mapCoords[0], station.mapCoords[1], station.id);
         if (isFirstPoint) {
           pathData += `M ${proj.x} ${proj.y}`;
           isFirstPoint = false;
@@ -241,7 +255,7 @@ class EuropeTimelineMap {
     this.data.forEach((station, index) => {
       if (!station.mapCoords) return;
 
-      const proj = this.projectCoords(station.mapCoords[0], station.mapCoords[1]);
+      const proj = this.projectCoords(station.mapCoords[0], station.mapCoords[1], station.id);
       const isCompleted = this.completedStations.has(station.id);
       const isCurrent = this.currentStation === station.id;
       const isLocked = !isCompleted && !isCurrent;
