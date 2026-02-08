@@ -7,6 +7,12 @@ class EuropeTimelineMap {
     this.data = dataArray;
     this.completedStations = new Set(JSON.parse(localStorage.getItem('completedStations') || '[]'));
     this.currentStation = parseInt(localStorage.getItem('currentStation') || '1');
+    
+    // Gamification system
+    this.points = parseInt(localStorage.getItem('mapPoints') || '0');
+    this.achievements = new Set(JSON.parse(localStorage.getItem('mapAchievements') || '[]'));
+    this.correctAnswers = parseInt(localStorage.getItem('correctAnswers') || '0');
+    
     // Adjust viewBox to match typical map proportions
     this.mapViewBox = { x: 0, y: 0, width: 100, height: 80 };
     this.mapScale = 1;
@@ -37,6 +43,43 @@ class EuropeTimelineMap {
       <span class="progress-text" id="progressText">0%</span>
     `;
     this.container.appendChild(progressBar);
+
+    // Create gamification stats panel
+    const statsPanel = document.createElement('div');
+    statsPanel.className = 'gamification-stats';
+    statsPanel.id = 'statsPanel';
+    statsPanel.innerHTML = `
+      <div class="stats-item">
+        <div class="stat-icon">⭐</div>
+        <div class="stat-content">
+          <div class="stat-label">נקודות</div>
+          <div class="stat-value" id="pointsDisplay">0</div>
+        </div>
+      </div>
+      <div class="stats-item">
+        <div class="stat-icon">📈</div>
+        <div class="stat-content">
+          <div class="stat-label">רמה</div>
+          <div class="stat-value" id="levelDisplay">1</div>
+        </div>
+      </div>
+      <div class="stats-item">
+        <div class="stat-icon">🏆</div>
+        <div class="stat-content">
+          <div class="stat-label">תגים</div>
+          <div class="stat-value" id="badgesDisplay">0</div>
+        </div>
+      </div>
+      <div class="stats-item">
+        <div class="stat-icon">✓</div>
+        <div class="stat-content">
+          <div class="stat-label">תשובות נכונות</div>
+          <div class="stat-value" id="correctAnswersDisplay">0</div>
+        </div>
+      </div>
+      <button class="achievements-btn" id="achievementsBtn">הישגים 🎖️</button>
+    `;
+    this.container.appendChild(statsPanel);
 
     // Create legend HTML
     const legend = document.createElement('div');
@@ -435,8 +478,18 @@ class EuropeTimelineMap {
     
     if (selectedIndex === station.quiz.correctAnswer) {
       selectedButton.classList.add('correct');
-      quizFeedback.textContent = 'כל הכבוד! תשובה נכונה ✓';
+      
+      // Award points
+      const pointsAwarded = 10;
+      this.awardPoints(pointsAwarded);
+      this.correctAnswers++;
+      localStorage.setItem('correctAnswers', this.correctAnswers.toString());
+      
+      quizFeedback.innerHTML = `כל הכבוד! תשובה נכונה ✓<br><span class="points-animation">+${pointsAwarded} נקודות!</span>`;
       quizFeedback.className = 'quiz-feedback success';
+      
+      // Trigger confetti animation
+      this.triggerConfetti();
       
       // Wait 1.5 seconds, then complete station and close modal
       setTimeout(() => {
@@ -509,6 +562,13 @@ class EuropeTimelineMap {
 
   attachEventListeners() {
     this.updateProgress();
+    this.updateStatsDisplay();
+    
+    // Achievements button
+    const achievementsBtn = document.getElementById('achievementsBtn');
+    if (achievementsBtn) {
+      achievementsBtn.addEventListener('click', () => this.showAchievements());
+    }
   }
 
   resetProgress() {
@@ -519,6 +579,114 @@ class EuropeTimelineMap {
       localStorage.removeItem('currentStation');
       this.init();
     }
+  }
+
+  awardPoints(amount) {
+    this.points += amount;
+    localStorage.setItem('mapPoints', this.points.toString());
+    this.updateStatsDisplay();
+    this.checkAchievements();
+  }
+
+  getLevel() {
+    return Math.floor(this.points / 100) + 1;
+  }
+
+  checkAchievements() {
+    const achievements = [
+      { id: 'first_5', name: 'התחלה טובה! 🌟', condition: this.completedStations.size >= 5 },
+      { id: 'first_10', name: 'בדרך הנכונה! 🎯', condition: this.completedStations.size >= 10 },
+      { id: 'halfway', name: 'חצי דרך! 🏃', condition: this.completedStations.size >= 17 },
+      { id: 'champion', name: 'גיבור הלמידה! 🏆', condition: this.completedStations.size === 34 },
+      { id: 'points_100', name: 'צובר נקודות! 💯', condition: this.points >= 100 },
+      { id: 'perfect', name: 'מושלם! ⭐', condition: this.correctAnswers >= 30 }
+    ];
+
+    achievements.forEach(ach => {
+      if (ach.condition && !this.achievements.has(ach.id)) {
+        this.achievements.add(ach.id);
+        localStorage.setItem('mapAchievements', JSON.stringify(Array.from(this.achievements)));
+        this.showAchievementBadge(ach.name);
+      }
+    });
+  }
+
+  showAchievementBadge(badgeName) {
+    const badge = document.createElement('div');
+    badge.className = 'achievement-badge';
+    badge.innerHTML = `<span>🎖️ ${badgeName}</span>`;
+    document.body.appendChild(badge);
+
+    setTimeout(() => {
+      badge.classList.add('show');
+    }, 10);
+
+    setTimeout(() => {
+      badge.classList.remove('show');
+      setTimeout(() => badge.remove(), 500);
+    }, 3000);
+  }
+
+  updateStatsDisplay() {
+    const level = this.getLevel();
+    const pointsDisplay = document.getElementById('pointsDisplay');
+    const levelDisplay = document.getElementById('levelDisplay');
+    const badgesDisplay = document.getElementById('badgesDisplay');
+    const correctAnswersDisplay = document.getElementById('correctAnswersDisplay');
+
+    if (pointsDisplay) pointsDisplay.textContent = this.points;
+    if (levelDisplay) levelDisplay.textContent = level;
+    if (badgesDisplay) badgesDisplay.textContent = this.achievements.size;
+    if (correctAnswersDisplay) correctAnswersDisplay.textContent = this.correctAnswers;
+  }
+
+  triggerConfetti() {
+    const confetti = document.createElement('div');
+    confetti.className = 'confetti-container';
+    
+    for (let i = 0; i < 30; i++) {
+      const piece = document.createElement('div');
+      piece.className = 'confetti';
+      piece.style.left = Math.random() * 100 + '%';
+      piece.style.backgroundColor = ['#FF6B6B', '#4ECDC4', '#FFE66D', '#95E1D3', '#F38181'][Math.floor(Math.random() * 5)];
+      piece.style.animationDelay = Math.random() * 0.3 + 's';
+      confetti.appendChild(piece);
+    }
+    
+    document.body.appendChild(confetti);
+    setTimeout(() => confetti.remove(), 3000);
+  }
+
+  showAchievements() {
+    const achievementsList = [
+      { id: 'first_5', name: 'התחלה טובה! 🌟', desc: 'השלם 5 תחנות' },
+      { id: 'first_10', name: 'בדרך הנכונה! 🎯', desc: 'השלם 10 תחנות' },
+      { id: 'halfway', name: 'חצי דרך! 🏃', desc: 'השלם 17 תחנות' },
+      { id: 'champion', name: 'גיבור הלמידה! 🏆', desc: 'השלם את כל 34 התחנות' },
+      { id: 'points_100', name: 'צובר נקודות! 💯', desc: 'צבור 100 נקודות' },
+      { id: 'perfect', name: 'מושלם! ⭐', desc: 'ענה נכון ל-30 שאלות' }
+    ];
+
+    const modal = document.createElement('div');
+    modal.className = 'achievements-modal';
+    modal.innerHTML = `
+      <div class="achievements-content">
+        <button class="modal-close" onclick="this.parentElement.parentElement.remove()">×</button>
+        <h2>🎖️ ההישגים שלך</h2>
+        <div class="achievements-grid">
+          ${achievementsList.map(ach => `
+            <div class="achievement-card ${this.achievements.has(ach.id) ? 'unlocked' : 'locked'}">
+              <div class="achievement-badge-img">${ach.name.split(' ')[1]}</div>
+              <div class="achievement-name">${ach.name}</div>
+              <div class="achievement-desc">${ach.desc}</div>
+              ${this.achievements.has(ach.id) ? '<div class="unlocked-badge">✓ בעל</div>' : '<div class="locked-badge">🔒 נעול</div>'}
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    `;
+    document.body.appendChild(modal);
+    modal.classList.add('active');
   }
 }
 
