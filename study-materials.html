@@ -10,20 +10,33 @@
 <body dir="rtl">
   <header class="main-header">
     <div class="header-container">
+      <a href="index.html" class="logo-link">
+        <img src="images/pazthehistorybagroot-high-resolution-logo-transparent.png" alt="PaztheHistoryBagroot" class="header-logo">
+      </a>
+      
       <nav class="main-nav">
         <ul>
           <li><a href="index.html">בית</a></li>
-          <li><a href="interactive-timeline.html">ציר זמן אינטראקטיבי</a></li>
-          <li><a href="timeline-map.html">מפת התחנות</a></li>
+          <li><a href="timeline-map.html">מפת התחנות האינטראקטיבית</a></li>
+          <li><a href="guide.html">מדריך משתמש</a></li>
           <li><a href="topics.html">נושאים לפי פרקים</a></li>
           <li><a href="quizzes.html">חידונים</a></li>
           <li><a href="study-materials.html" class="active">חומרי לימוד</a></li>
           <li><a href="about.html">אודות</a></li>
         </ul>
       </nav>
-      <a href="index.html" class="logo-link">
-        <img src="images/pazthehistorybagroot-high-resolution-logo-transparent.png" alt="PaztheHistoryBagroot" class="header-logo">
-      </a>
+      
+      <div class="header-actions">
+        <div id="userProfileHeader" class="user-profile-header" style="display: none;">
+          <a href="profile.html" class="profile-link">
+            <span id="userProfileIcon">👤</span>
+            <span id="userProfileName">משתמש</span>
+          </a>
+        </div>
+        <div id="authButtons" class="auth-buttons" style="display: none;">
+          <a href="auth.html" class="cta-button">התחברות</a>
+        </div>
+      </div>
     </div>
   </header>
 
