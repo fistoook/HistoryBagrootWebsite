@@ -1248,6 +1248,94 @@ table td a:hover {
   padding: 20px;
 }
 
+/* Map SVG Wrapper */
+.map-svg-wrapper {
+  position: relative;
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+  background: white;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 4px 12px rgba(74, 157, 111, 0.1);
+}
+
+/* Fullscreen button on map */
+.map-fullscreen-btn {
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 24px;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+}
+
+.map-fullscreen-btn:hover {
+  transform: scale(1.1);
+  box-shadow: 0 6px 16px rgba(102, 126, 234, 0.6);
+}
+
+.map-fullscreen-btn:active {
+  transform: scale(0.95);
+}
+
+/* Fullscreen map wrapper styles */
+.map-svg-wrapper:fullscreen,
+.map-svg-wrapper:-webkit-full-screen,
+.map-svg-wrapper:-moz-full-screen,
+.map-svg-wrapper:-ms-fullscreen {
+  background: white;
+  padding: 0;
+  margin: 0;
+  overflow: hidden;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  position: relative;
+}
+
+.map-svg-wrapper:fullscreen .timeline-map,
+.map-svg-wrapper:-webkit-full-screen .timeline-map,
+.map-svg-wrapper:-moz-full-screen .timeline-map,
+.map-svg-wrapper:-ms-fullscreen .timeline-map {
+  width: auto;
+  height: auto;
+  max-height: 90vh;
+  max-width: 95vw;
+  object-fit: contain;
+  margin: auto;
+  border: none;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.map-svg-wrapper:fullscreen .map-fullscreen-btn,
+.map-svg-wrapper:-webkit-full-screen .map-fullscreen-btn,
+.map-svg-wrapper:-moz-full-screen .map-fullscreen-btn,
+.map-svg-wrapper:-ms-fullscreen .map-fullscreen-btn {
+  bottom: 30px;
+  right: 30px;
+  width: 56px;
+  height: 56px;
+  font-size: 28px;
+}
+
 .map-legend {
   background: linear-gradient(135deg, #f0f8f4 0%, #e8f5ef 100%);
   border: 1px solid var(--border-color);
@@ -1304,7 +1392,7 @@ table td a:hover {
   width: 100%;
   height: auto;
   max-width: 100%;
-  min-height: 600px;
+  max-height: 700px;
   border: 2px solid var(--border-color);
   border-radius: 8px;
   background: linear-gradient(135deg, #fafbfa 0%, #f5f8f6 100%);

@@ -14,6 +14,7 @@ class EuropeTimelineMap {
     this.container = document.getElementById(containerId);
     this.data = dataArray;
     this.completedStations = new Set(this.user.completedStations || []);
+    this.completedSuperStations = new Set(this.user.completedSuperStations || []);
     this.currentStation = parseInt(localStorage.getItem('currentStation') || '1');
     
     // Use user system for gamification
@@ -225,8 +226,33 @@ class EuropeTimelineMap {
     stations.setAttribute('class', 'stations-group');
     svg.appendChild(stations);
 
-    // Add SVG to container
-    this.container.appendChild(svg);
+    // Create wrapper for SVG with fullscreen button
+    const mapWrapper = document.createElement('div');
+    mapWrapper.className = 'map-svg-wrapper';
+    mapWrapper.id = 'mapSvgWrapper';
+    
+    // Add SVG to wrapper
+    mapWrapper.appendChild(svg);
+    
+    // Create fullscreen button on the map
+    const fullscreenBtn = document.createElement('button');
+    fullscreenBtn.className = 'map-fullscreen-btn';
+    fullscreenBtn.innerHTML = '⛶';
+    fullscreenBtn.title = 'מצב מסך מלא';
+    fullscreenBtn.setAttribute('aria-label', 'מצב מסך מלא');
+    mapWrapper.appendChild(fullscreenBtn);
+    
+    // Remove the old fullscreen button from top controls if it exists
+    const fullscreenBtnFromTop = document.getElementById('fullscreenBtn');
+    if (fullscreenBtnFromTop) {
+      fullscreenBtnFromTop.remove();
+    }
+    
+    // Add wrapper to container
+    this.container.appendChild(mapWrapper);
+    
+    // Store reference to SVG for fullscreen
+    this.svgElement = svg;
 
     // Add modal for station info and quiz
     const modal = document.createElement('div');
@@ -437,6 +463,11 @@ class EuropeTimelineMap {
     if (!stationsGroup) {
       stationsGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
       stationsGroup.setAttribute('id', 'super-stations');
+      stationsGroup.setAttribute('pointer-events', 'all');
+      svg.appendChild(stationsGroup);
+    } else {
+      // Ensure super stations are always on top by re-appending
+      svg.removeChild(stationsGroup);
       svg.appendChild(stationsGroup);
     }
 
@@ -455,6 +486,7 @@ class EuropeTimelineMap {
       const superGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
       superGroup.setAttribute('class', 'super-station ' + (isUnlocked ? 'unlocked' : 'locked'));
       superGroup.setAttribute('data-super-id', superStation.id);
+      superGroup.setAttribute('pointer-events', 'all');
 
       // Outer glow
       const glow = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
@@ -463,6 +495,7 @@ class EuropeTimelineMap {
       glow.setAttribute('r', '3');
       glow.setAttribute('fill', isUnlocked ? 'rgba(255, 215, 0, 0.3)' : 'rgba(200, 200, 200, 0.2)');
       glow.setAttribute('class', 'super-glow');
+      glow.setAttribute('pointer-events', 'none');
       superGroup.appendChild(glow);
 
       // Main star shape
@@ -471,13 +504,16 @@ class EuropeTimelineMap {
       star.setAttribute('y', proj.y + 0.8);
       star.setAttribute('text-anchor', 'middle');
       star.setAttribute('font-size', '2.5');
-      star.setAttribute('pointer-events', 'auto');
+      star.setAttribute('pointer-events', 'all');
       star.textContent = superStation.icon;
       superGroup.appendChild(star);
 
       if (isUnlocked) {
         superGroup.style.cursor = 'pointer';
-        superGroup.addEventListener('click', () => this.showSuperStationInfo(superStation));
+        superGroup.addEventListener('click', (e) => {
+          e.stopPropagation();
+          this.showSuperStationInfo(superStation);
+        });
         
         // Add animation
         superGroup.style.animation = 'glow-pulse 2s infinite';
@@ -830,8 +866,8 @@ class EuropeTimelineMap {
       achievementsBtn.addEventListener('click', () => this.showAchievements());
     }
 
-    // Fullscreen button
-    const fullscreenBtn = document.getElementById('fullscreenBtn');
+    // Fullscreen button (now inside map wrapper)
+    const fullscreenBtn = document.querySelector('.map-fullscreen-btn');
     if (fullscreenBtn) {
       fullscreenBtn.addEventListener('click', () => this.toggleFullscreen());
     }
@@ -845,21 +881,38 @@ class EuropeTimelineMap {
   }
 
   toggleFullscreen() {
-    const mapContainer = document.getElementById('mapContainer');
-    if (!mapContainer) return;
+    const mapWrapper = document.getElementById('mapSvgWrapper');
+    if (!mapWrapper) return;
 
-    if (!document.fullscreenElement) {
-      mapContainer.requestFullscreen ? mapContainer.requestFullscreen() :
-        mapContainer.webkitRequestFullscreen ? mapContainer.webkitRequestFullscreen() :
-        mapContainer.mozRequestFullScreen ? mapContainer.mozRequestFullScreen() :
-        mapContainer.msRequestFullscreen ? mapContainer.msRequestFullscreen() : null;
+    if (!document.fullscreenElement && !document.webkitFullscreenElement && 
+        !document.mozFullScreenElement && !document.msFullscreenElement) {
+      // Enter fullscreen
+      if (mapWrapper.requestFullscreen) {
+        mapWrapper.requestFullscreen().catch(err => {
+          console.error('Error attempting to enable fullscreen:', err);
+        });
+      } else if (mapWrapper.webkitRequestFullscreen) {
+        mapWrapper.webkitRequestFullscreen();
+      } else if (mapWrapper.mozRequestFullScreen) {
+        mapWrapper.mozRequestFullScreen();
+      } else if (mapWrapper.msRequestFullscreen) {
+        mapWrapper.msRequestFullscreen();
+      }
       
       soundEffects.playClick();
     } else {
-      document.exitFullscreen ? document.exitFullscreen() :
-        document.webkitExitFullscreen ? document.webkitExitFullscreen() :
-        document.mozCancelFullScreen ? document.mozCancelFullScreen() :
-        document.msExitFullscreen ? document.msExitFullscreen() : null;
+      // Exit fullscreen
+      if (document.exitFullscreen) {
+        document.exitFullscreen().catch(err => {
+          console.error('Error attempting to exit fullscreen:', err);
+        });
+      } else if (document.webkitExitFullscreen) {
+        document.webkitExitFullscreen();
+      } else if (document.mozCancelFullScreen) {
+        document.mozCancelFullScreen();
+      } else if (document.msExitFullscreen) {
+        document.msExitFullscreen();
+      }
       
       soundEffects.playClick();
     }
