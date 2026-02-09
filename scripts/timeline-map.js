@@ -30,6 +30,7 @@ class EuropeTimelineMap {
   init() {
     this.createMapStructure();
     this.renderStations();
+    this.renderSuperStations();
     this.renderConnectingPath();
     this.attachEventListeners();
     this.displayUserProfile();
@@ -428,6 +429,67 @@ class EuropeTimelineMap {
     });
   }
 
+  renderSuperStations() {
+    const svg = document.querySelector('.timeline-map');
+    if (!svg) return;
+
+    let stationsGroup = document.getElementById('super-stations');
+    if (!stationsGroup) {
+      stationsGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+      stationsGroup.setAttribute('id', 'super-stations');
+      svg.appendChild(stationsGroup);
+    }
+
+    stationsGroup.innerHTML = '';
+
+    SUPER_STATIONS.forEach(superStation => {
+      const stationIndex = superStation.unlocksAt;
+      const station = this.data.find(s => s.id === stationIndex);
+      
+      if (!station || !station.mapCoords) return;
+
+      const proj = this.projectCoords(station.mapCoords[0], station.mapCoords[1], station.id);
+      const isUnlocked = this.completedStations.size >= superStation.unlocksAt;
+
+      // Create super station group
+      const superGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+      superGroup.setAttribute('class', 'super-station ' + (isUnlocked ? 'unlocked' : 'locked'));
+      superGroup.setAttribute('data-super-id', superStation.id);
+
+      // Outer glow
+      const glow = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+      glow.setAttribute('cx', proj.x);
+      glow.setAttribute('cy', proj.y);
+      glow.setAttribute('r', '3');
+      glow.setAttribute('fill', isUnlocked ? 'rgba(255, 215, 0, 0.3)' : 'rgba(200, 200, 200, 0.2)');
+      glow.setAttribute('class', 'super-glow');
+      superGroup.appendChild(glow);
+
+      // Main star shape
+      const star = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      star.setAttribute('x', proj.x);
+      star.setAttribute('y', proj.y + 0.8);
+      star.setAttribute('text-anchor', 'middle');
+      star.setAttribute('font-size', '2.5');
+      star.setAttribute('pointer-events', 'auto');
+      star.textContent = superStation.icon;
+      superGroup.appendChild(star);
+
+      if (isUnlocked) {
+        superGroup.style.cursor = 'pointer';
+        superGroup.addEventListener('click', () => this.showSuperStationInfo(superStation));
+        
+        // Add animation
+        superGroup.style.animation = 'glow-pulse 2s infinite';
+      } else {
+        superGroup.style.cursor = 'not-allowed';
+        superGroup.style.opacity = '0.5';
+      }
+
+      stationsGroup.appendChild(superGroup);
+    });
+  }
+
   showStationInfo(station) {
     const modal = document.getElementById('stationModal');
     const titleEl = document.getElementById('modalTitle');
@@ -489,6 +551,161 @@ class EuropeTimelineMap {
     modal.classList.remove('active');
   }
 
+  showSuperStationInfo(superStation) {
+    const modal = document.getElementById('stationModal');
+    const titleEl = document.getElementById('modalTitle');
+    const dateEl = document.getElementById('modalDate');
+    const descEl = document.getElementById('modalDescription');
+    const keyPointsEl = document.getElementById('modalKeyPoints');
+    const quizSection = document.getElementById('quizSection');
+    const quizQuestion = document.getElementById('quizQuestion');
+    const quizOptions = document.getElementById('quizOptions');
+    const quizFeedback = document.getElementById('quizFeedback');
+
+    // Populate super station info
+    titleEl.textContent = `${superStation.icon} ${superStation.title}`;
+    dateEl.textContent = '💪 תחנת סיכום';
+    descEl.textContent = superStation.description;
+
+    keyPointsEl.innerHTML = '<h4>קווים לעלייה:</h4>';
+    keyPointsEl.innerHTML += `<p><strong>🎯 אתם על סף פריצה חדשה בלמידה!</strong></p>`;
+    keyPointsEl.innerHTML += `<p>תחנת סיכום זו מקיפה את כל המטריאל מהתחנה הקודמת עד עכשיו. תשיבו נכון והישיגו <strong>${superStation.points} נקודות בונוס!</strong></p>`;
+
+    // Show quiz
+    quizSection.style.display = 'block';
+    quizQuestion.textContent = superStation.quiz.question;
+    quizFeedback.textContent = '';
+    quizFeedback.className = 'quiz-feedback';
+    
+    // Render quiz options
+    quizOptions.innerHTML = '';
+    superStation.quiz.options.forEach((option, index) => {
+      const optionBtn = document.createElement('button');
+      optionBtn.className = 'quiz-option';
+      optionBtn.textContent = option;
+      optionBtn.onclick = () => this.checkSuperAnswer(superStation, index, optionBtn);
+      quizOptions.appendChild(optionBtn);
+    });
+
+    // Show modal
+    modal.classList.add('active');
+  }
+
+  checkSuperAnswer(superStation, selectedIndex, selectedButton) {
+    const quizFeedback = document.getElementById('quizFeedback');
+    const quizOptions = document.getElementById('quizOptions');
+    const allButtons = quizOptions.querySelectorAll('.quiz-option');
+    
+    // Disable all buttons after answer
+    allButtons.forEach(btn => btn.disabled = true);
+    
+    if (selectedIndex === superStation.quiz.correctAnswer) {
+      selectedButton.classList.add('correct');
+      
+      // Award BONUS points
+      const pointsAwarded = superStation.points;
+      this.awardPoints(pointsAwarded);
+      this.correctAnswers++;
+      localStorage.setItem('correctAnswers', this.correctAnswers.toString());
+      
+      // Update user system
+      if (this.user && userSystem) {
+        this.user.correctAnswers = this.correctAnswers;
+        userSystem.updateUser({ correctAnswers: this.correctAnswers });
+      }
+      
+      // Play epic sound
+      soundEffects.playEpicUnlock();
+      
+      quizFeedback.innerHTML = `🎊 תשובה נכונה! השלמתם תחנת סיכום!<br><span class="points-animation" style="font-size: 1.5em; color: gold;">+${pointsAwarded} נקודות בונוס! 🌟</span>`;
+      quizFeedback.className = 'quiz-feedback success';
+      
+      // Trigger epic confetti and animation
+      this.triggerEpicConfetti();
+      this.showChainUnlockedNotification(superStation);
+      
+      // Wait 2 seconds, then close modal
+      setTimeout(() => {
+        this.closeModal();
+      }, 2000);
+    } else {
+      selectedButton.classList.add('incorrect');
+      // Show correct answer
+      allButtons[superStation.quiz.correctAnswer].classList.add('correct');
+      quizFeedback.textContent = 'תשובה שגויה. זו תחנת סיכום קשה - נסו שוב!';
+      quizFeedback.className = 'quiz-feedback error';
+      
+      soundEffects.playError();
+      
+      // Re-enable buttons after 3 seconds
+      setTimeout(() => {
+        allButtons.forEach(btn => {
+          btn.disabled = false;
+          btn.classList.remove('correct', 'incorrect');
+        });
+        quizFeedback.textContent = '';
+      }, 3000);
+    }
+  }
+
+  showChainUnlockedNotification(superStation) {
+    const notification = document.createElement('div');
+    notification.className = 'chain-unlock-notification';
+    notification.innerHTML = `
+      <div style="font-size: 3em; margin-bottom: 10px;">${superStation.icon}</div>
+      <h2>${superStation.title}</h2>
+      <p>🎉 אתם פתחתם שרשרת חדשה של לימודים!</p>
+      <p style="font-size: 0.9em; margin-top: 10px; color: gold;">+${superStation.points} נקודות בונוס!</p>
+    `;
+    notification.style.cssText = `
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 40px;
+      border-radius: 20px;
+      text-align: center;
+      z-index: 10000;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+      animation: popIn 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    `;
+    
+    document.body.appendChild(notification);
+    
+    setTimeout(() => {
+      notification.style.animation = 'fadeOut 0.5s ease';
+      setTimeout(() => notification.remove(), 500);
+    }, 3000);
+  }
+
+  triggerEpicConfetti() {
+    // Enhanced confetti with more pieces
+    const container = document.body;
+    const confettiCount = 100;
+    
+    for (let i = 0; i < confettiCount; i++) {
+      setTimeout(() => {
+        const confetti = document.createElement('div');
+        confetti.style.cssText = `
+          position: fixed;
+          width: ${Math.random() * 8 + 4}px;
+          height: ${Math.random() * 8 + 4}px;
+          background: ${['#ffd700', '#ff69b4', '#00bfff', '#32cd32'][Math.floor(Math.random() * 4)]};
+          left: ${Math.random() * window.innerWidth}px;
+          top: -10px;
+          border-radius: 50%;
+          pointer-events: none;
+          z-index: 9999;
+          animation: confettiFall ${2 + Math.random() * 2}s linear;
+        `;
+        container.appendChild(confetti);
+        setTimeout(() => confetti.remove(), 4000);
+      }, i * 30);
+    }
+  }
+
   checkAnswer(station, selectedIndex, selectedButton) {
     const quizFeedback = document.getElementById('quizFeedback');
     const quizOptions = document.getElementById('quizOptions');
@@ -516,6 +733,16 @@ class EuropeTimelineMap {
       quizFeedback.className = 'quiz-feedback success';
       
       // Trigger confetti animation
+      this.triggerConfetti();
+      
+      // Trigger sound effect
+      soundEffects.playSuccess();
+      
+      // Wait 1.5 seconds, then complete station and close modal
+      setTimeout(() => {
+        this.completeStation(station.id);
+        this.closeModal();
+      }, 1500);
       this.triggerConfetti();
       
       // Wait 1.5 seconds, then complete station and close modal
@@ -601,6 +828,55 @@ class EuropeTimelineMap {
     const achievementsBtn = document.getElementById('achievementsBtn');
     if (achievementsBtn) {
       achievementsBtn.addEventListener('click', () => this.showAchievements());
+    }
+
+    // Fullscreen button
+    const fullscreenBtn = document.getElementById('fullscreenBtn');
+    if (fullscreenBtn) {
+      fullscreenBtn.addEventListener('click', () => this.toggleFullscreen());
+    }
+
+    // Sound toggle button
+    const soundToggle = document.getElementById('soundToggle');
+    if (soundToggle) {
+      soundToggle.addEventListener('click', () => this.toggleSound());
+      this.updateSoundButtonDisplay();
+    }
+  }
+
+  toggleFullscreen() {
+    const mapContainer = document.getElementById('mapContainer');
+    if (!mapContainer) return;
+
+    if (!document.fullscreenElement) {
+      mapContainer.requestFullscreen ? mapContainer.requestFullscreen() :
+        mapContainer.webkitRequestFullscreen ? mapContainer.webkitRequestFullscreen() :
+        mapContainer.mozRequestFullScreen ? mapContainer.mozRequestFullScreen() :
+        mapContainer.msRequestFullscreen ? mapContainer.msRequestFullscreen() : null;
+      
+      soundEffects.playClick();
+    } else {
+      document.exitFullscreen ? document.exitFullscreen() :
+        document.webkitExitFullscreen ? document.webkitExitFullscreen() :
+        document.mozCancelFullScreen ? document.mozCancelFullScreen() :
+        document.msExitFullscreen ? document.msExitFullscreen() : null;
+      
+      soundEffects.playClick();
+    }
+  }
+
+  toggleSound() {
+    const isEnabled = localStorage.getItem('soundEnabled') !== 'false';
+    soundEffects.toggleSound(!isEnabled);
+    this.updateSoundButtonDisplay();
+  }
+
+  updateSoundButtonDisplay() {
+    const soundToggle = document.getElementById('soundToggle');
+    if (soundToggle) {
+      const isEnabled = localStorage.getItem('soundEnabled') !== 'false';
+      soundToggle.textContent = isEnabled ? '🔊 קול' : '🔇 קול כבוי';
+      soundToggle.style.opacity = isEnabled ? '1' : '0.6';
     }
   }
 
