@@ -1,0 +1,38 @@
+<header class="main-header">
+  <div class="header-container">
+    <a href="/" class="logo-link">
+      <img src="/images/pazthehistorybagroot-high-resolution-logo-transparent.png" alt="PaztheHistoryBagroot" class="header-logo">
+    </a>
+
+    <nav class="main-nav">
+      <ul>
+        <li><a href="/" {% if current_path == "/" %}class="active"{% endif %}>בית</a></li>
+        <li><a href="/timeline-map/" {% if current_path == "/timeline-map/" %}class="active"{% endif %}>מפת התחנות</a></li>
+        <li><a href="/guide/" {% if current_path == "/guide/" %}class="active"{% endif %}>מדריך משתמש</a></li>
+        <li><a href="/topics/" {% if current_path == "/topics/" %}class="active"{% endif %}>נושאים לפי פרקים</a></li>
+        <li><a href="/quizzes/" {% if current_path == "/quizzes/" %}class="active"{% endif %}>חידונים</a></li>
+        <li><a href="/study-materials/" {% if current_path == "/study-materials/" %}class="active"{% endif %}>חומרי לימוד</a></li>
+        <li><a href="/about/" {% if current_path == "/about/" %}class="active"{% endif %}>אודות</a></li>
+        <li><a href="/leaderboard/" {% if current_path == "/leaderboard/" %}class="active"{% endif %}>מובילים</a></li>
+      </ul>
+    </nav>
+
+    <div class="header-actions">
+      <div id="userProfileHeader" class="user-profile-header" {% if not request.user.is_authenticated %}style="display: none;"{% endif %}>
+        <a href="/profile/" class="profile-link profile-circle">
+          <span id="userProfileIcon">{% if request.user.is_authenticated %}👤{% else %}👤{% endif %}</span>
+          <span id="userProfileName">{% if request.user.is_authenticated %}{{ request.user.username }}{% else %}משתמש{% endif %}</span>
+        </a>
+      </div>
+
+      <div id="authButtons" class="auth-buttons" {% if request.user.is_authenticated %}style="display: none;"{% endif %}>
+        <a href="/login/" class="cta-button">התחברות</a>
+        <a href="/register/" class="cta-button">הרשמה</a>
+      </div>
+
+      {% if request.user.is_authenticated %}
+        <a href="/logout/?next=/" class="header-logout-link">יציאה</a>
+      {% endif %}
+    </div>
+  </div>
+</header>

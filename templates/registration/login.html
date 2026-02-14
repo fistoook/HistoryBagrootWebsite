@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>התחברות - מעבדת היסטוריה</title>
+    <link rel="stylesheet" href="/styles/style.css">
+    <style>
+        .auth-container { min-height: 100vh; background: linear-gradient(135deg, #2e3a59 0%, #6b1f2a 100%); display: flex; align-items: center; justify-content: center; padding: 20px; }
+        .auth-wrapper { background: white; border-radius: 16px; box-shadow: 0 20px 60px rgba(0,0,0,0.3); max-width: 420px; width: 100%; overflow: hidden; }
+        .auth-header { background: linear-gradient(135deg, #2e3a59 0%, #6b1f2a 100%); color: #f8f1e4; padding: 30px 20px; text-align: center; }
+        .auth-header h1 { margin: 0 0 10px; font-size: 28px; }
+        .auth-content { padding: 30px; }
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; margin-bottom: 8px; font-weight: 600; color: #333; }
+        .form-group input { width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 14px; box-sizing: border-box; }
+        .form-group input:focus { outline: none; border-color: #6b1f2a; }
+        .btn-auth { width: 100%; padding: 12px; background: linear-gradient(135deg, #2e3a59 0%, #6b1f2a 100%); color: #f8f1e4; border: none; border-radius: 8px; font-size: 16px; font-weight: 600; cursor: pointer; }
+        .auth-toggle { text-align: center; padding-top: 20px; border-top: 1px solid #e0e0e0; }
+        .auth-toggle a { color: #6b1f2a; font-weight: 600; text-decoration: none; }
+        .errorlist { color: #e74c3c; font-size: 13px; margin-top: 5px; list-style: none; padding: 0; }
+        .back-home { display: block; text-align: center; margin-top: 15px; color: #666; text-decoration: none; }
+    </style>
+</head>
+<body class="content-page">
+    {% include 'partials/header.html' with current_path='/login/' %}
+    <div class="auth-container">
+        <div class="auth-wrapper">
+            <div class="auth-header">
+                <h1>🏛️ מעבדת היסטוריה</h1>
+                <p>התחבר לחשבון שלך</p>
+            </div>
+            <div class="auth-content">
+                <form method="post" action="{% url 'login' %}">
+                    {% csrf_token %}
+                    {% if form.non_field_errors %}
+                        <ul class="errorlist">{{ form.non_field_errors }}</ul>
+                    {% endif %}
+                    <div class="form-group">
+                        <label for="id_username">{{ form.username.label }}</label>
+                        {{ form.username }}
+                        {{ form.username.errors }}
+                    </div>
+                    <div class="form-group">
+                        <label for="id_password">{{ form.password.label }}</label>
+                        {{ form.password }}
+                        {{ form.password.errors }}
+                    </div>
+                    <input type="hidden" name="next" value="{{ next }}">
+                    <button type="submit" class="btn-auth">התחבר</button>
+                </form>
+                <div class="auth-toggle">
+                    <p>עדיין לא רשום? <a href="{% url 'register' %}">הירשם כאן</a></p>
+                </div>
+                <a href="/" class="back-home">← חזרה לדף הבית</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

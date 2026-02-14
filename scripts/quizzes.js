@@ -1,15 +1,28 @@
 // Quizzes JavaScript
 
 let currentQuiz = null;
+let currentQuizId = null;
 let userAnswers = {};
 let startTime = null;
 
+function ensureQuizAuth() {
+  if (typeof window.__USER__ !== 'undefined' && window.__USER__ && window.__USER__.isAuthenticated) {
+    return true;
+  }
+  alert('כדי להתחיל חידון צריך להתחבר.');
+  window.location.href = '/login/?next=/quizzes/';
+  return false;
+}
+
 function startQuiz(quizId) {
+  if (!ensureQuizAuth()) return;
+
   // Add practice exam data if it doesn't exist
   if (quizId === 'practice-exam') {
     createPracticeExam();
   }
   
+  currentQuizId = quizId;
   currentQuiz = quizzes[quizId];
   if (!currentQuiz) {
     alert('החידון לא נמצא.');
@@ -119,6 +132,26 @@ function submitQuiz() {
   const timeTaken = Math.round((endTime - startTime) / 60000);
   
   showResults(correctCount, totalCount, percentage, timeTaken);
+  
+  // Save result to server if user is logged in (Django)
+  if (typeof window.__USER__ !== 'undefined' && window.__USER__ && window.__USER__.isAuthenticated && window.__CSRF__) {
+    fetch('/api/quiz-result/', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRFToken': window.__CSRF__,
+        'X-Requested-With': 'XMLHttpRequest'
+      },
+      body: JSON.stringify({
+        quiz_id: currentQuizId || 'unknown',
+        quiz_title: currentQuiz ? currentQuiz.title : 'חידון',
+        correct: correctCount,
+        total: totalCount,
+        time_minutes: timeTaken
+      }),
+      credentials: 'same-origin'
+    }).catch(function() {});
+  }
 }
 
 function showResults(correctCount, totalCount, percentage, timeTaken) {

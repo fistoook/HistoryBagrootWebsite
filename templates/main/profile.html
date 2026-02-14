@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>פרופיל - {{ user.get_username }}</title>
+    <link rel="stylesheet" href="/styles/style.css">
+    <style>
+        .profile-page { max-width: 900px; margin: 0 auto; padding: 20px; min-height: 80vh; }
+        .profile-header { display: flex; align-items: center; gap: 20px; flex-wrap: wrap; background: linear-gradient(135deg, #f8f1e4 0%, #e8dbc2 100%); padding: 25px; border-radius: 12px; margin-bottom: 25px; }
+        .profile-avatar { width: 80px; height: 80px; border-radius: 50%; background: linear-gradient(135deg, #6b1f2a 0%, #2e3a59 100%); display: flex; align-items: center; justify-content: center; font-size: 42px; }
+        .profile-name { font-size: 24px; font-weight: 700; color: #2c3e50; }
+        .profile-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin: 20px 0; }
+        .stat-card { background: white; padding: 20px; border-radius: 10px; text-align: center; box-shadow: 0 2px 10px rgba(0,0,0,0.08); }
+        .stat-value { font-size: 28px; font-weight: 700; color: #6b1f2a; }
+        .stat-label { font-size: 14px; color: #666; margin-top: 5px; }
+        .section-title { font-size: 20px; font-weight: 700; color: #2a1f1a; margin: 25px 0 15px; padding-bottom: 8px; border-bottom: 2px solid #c9a66b; }
+        .quiz-results-list { list-style: none; padding: 0; margin: 0; }
+        .quiz-result-item { background: white; padding: 15px 20px; margin-bottom: 10px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+        .quiz-result-item .title { font-weight: 600; color: #2c3e50; }
+        .quiz-result-item .score { font-weight: 700; color: #6b1f2a; }
+        .quiz-result-item .meta { font-size: 13px; color: #666; }
+        .nav-links { display: flex; gap: 10px; margin-top: 15px; }
+        .nav-links a { padding: 10px 18px; background: #2e3a59; color: #f8f1e4; text-decoration: none; border-radius: 8px; font-weight: 600; }
+        .nav-links a:hover { background: #6b1f2a; }
+        .empty-results { color: #666; padding: 20px; text-align: center; background: #f5f5f5; border-radius: 8px; }
+    </style>
+</head>
+<body class="content-page">
+    {% include 'partials/header.html' with current_path='/profile/' %}
+
+    <main class="profile-page">
+        <div class="profile-header">
+            <div class="profile-avatar">{{ avatar_icon }}</div>
+            <div>
+                <h1 class="profile-name">{{ user.get_username }}</h1>
+                <p style="color: #666; margin-top: 5px;">הפרופיל שלך – תוצאות חידונים</p>
+            </div>
+        </div>
+
+        <div class="profile-stats">
+            <div class="stat-card">
+                <div class="stat-value">{{ total_correct }}</div>
+                <div class="stat-label">תשובות נכונות</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">{{ total_quizzes }}</div>
+                <div class="stat-label">חידונים שהושלמו</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">{{ avg_score }}%</div>
+                <div class="stat-label">ממוצע ציון</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">{{ map_completed }}</div>
+                <div class="stat-label">תחנות מפה הושלמו</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">{{ map_points }}</div>
+                <div class="stat-label">נקודות מפת תחנות</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">{{ map_current_station }}</div>
+                <div class="stat-label">תחנה נוכחית במפה</div>
+            </div>
+        </div>
+
+        <h2 class="section-title">תוצאות חידונים אחרונות</h2>
+        {% if quiz_results %}
+            <ul class="quiz-results-list">
+                {% for r in quiz_results %}
+                    <li class="quiz-result-item">
+                        <span class="title">{{ r.quiz_title }}</span>
+                        <span class="score">{{ r.correct }}/{{ r.total }} ({{ r.score_percent|floatformat:0 }}%)</span>
+                        <span class="meta">{{ r.created_at|date:"d/m/Y H:i" }}{% if r.time_minutes %} • {{ r.time_minutes }} דק׳{% endif %}</span>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p class="empty-results">עדיין לא השלמת חידונים. <a href="/quizzes/">התחל חידון →</a></p>
+        {% endif %}
+
+        <div class="nav-links">
+            <a href="/quizzes/">לחידונים</a>
+            <a href="/leaderboard/">דף המובילים</a>
+            <a href="/">דף הבית</a>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2026 מעבדת היסטוריה</p>
+        </div>
+    </footer>
+</body>
+</html>

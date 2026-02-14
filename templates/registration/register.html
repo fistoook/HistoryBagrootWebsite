@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>הרשמה - מעבדת היסטוריה</title>
+    <link rel="stylesheet" href="/styles/style.css">
+    <style>
+        .auth-container { min-height: 100vh; background: linear-gradient(135deg, #2e3a59 0%, #6b1f2a 100%); display: flex; align-items: center; justify-content: center; padding: 20px; }
+        .auth-wrapper { background: white; border-radius: 16px; box-shadow: 0 20px 60px rgba(0,0,0,0.3); max-width: 420px; width: 100%; overflow: hidden; }
+        .auth-header { background: linear-gradient(135deg, #2e3a59 0%, #6b1f2a 100%); color: #f8f1e4; padding: 30px 20px; text-align: center; }
+        .auth-header h1 { margin: 0 0 10px; font-size: 28px; }
+        .auth-content { padding: 30px; }
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; margin-bottom: 8px; font-weight: 600; color: #333; }
+        .form-group input { width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 14px; box-sizing: border-box; }
+        .btn-auth { width: 100%; padding: 12px; background: linear-gradient(135deg, #2e3a59 0%, #6b1f2a 100%); color: #f8f1e4; border: none; border-radius: 8px; font-size: 16px; font-weight: 600; cursor: pointer; }
+        .auth-toggle { text-align: center; padding-top: 20px; border-top: 1px solid #e0e0e0; }
+        .auth-toggle a { color: #6b1f2a; font-weight: 600; text-decoration: none; }
+        .errorlist { color: #e74c3c; font-size: 13px; margin-top: 5px; list-style: none; padding: 0; }
+        .avatar-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin: 10px 0; }
+        .avatar-option { border: 3px solid #e0e0e0; border-radius: 12px; padding: 10px; text-align: center; cursor: pointer; font-size: 24px; transition: all 0.2s; }
+        .avatar-option:hover, .avatar-option.selected { border-color: #6b1f2a; background: #f8f1e4; }
+        .back-home { display: block; text-align: center; margin-top: 15px; color: #666; text-decoration: none; }
+    </style>
+</head>
+<body class="content-page">
+    {% include 'partials/header.html' with current_path='/register/' %}
+    <div class="auth-container">
+        <div class="auth-wrapper">
+            <div class="auth-header">
+                <h1>🏛️ מעבדת היסטוריה</h1>
+                <p>יצירת חשבון חדש</p>
+            </div>
+            <div class="auth-content">
+                <form method="post" id="registerForm">
+                    {% csrf_token %}
+                    {{ form.avatar }}
+                    <div class="form-group">
+                        <label>{{ form.username.label }}</label>
+                        {{ form.username }}
+                        {{ form.username.errors }}
+                    </div>
+                    <div class="form-group">
+                        <label>{{ form.email.label }}</label>
+                        {{ form.email }}
+                        {{ form.email.errors }}
+                    </div>
+                    <div class="form-group">
+                        <label>{{ form.password1.label }}</label>
+                        {{ form.password1 }}
+                        {{ form.password1.errors }}
+                    </div>
+                    <div class="form-group">
+                        <label>{{ form.password2.label }}</label>
+                        {{ form.password2 }}
+                        {{ form.password2.errors }}
+                    </div>
+                    <div class="form-group">
+                        <label>בחר דמות (אופציונלי)</label>
+                        <div class="avatar-grid" id="avatarGrid">
+                            <div class="avatar-option" data-avatar="churchill" title="צ'רצ'יל">🎩</div>
+                            <div class="avatar-option" data-avatar="roosevelt" title="רוזוולט">🤠</div>
+                            <div class="avatar-option" data-avatar="einstein" title="איינשטיין">👨‍🔬</div>
+                            <div class="avatar-option" data-avatar="florence" title="נייטינגל">🏥</div>
+                            <div class="avatar-option" data-avatar="ada" title="אדה">🔢</div>
+                            <div class="avatar-option" data-avatar="joan" title="ז'אן ד'ארק">⚔️</div>
+                            <div class="avatar-option" data-avatar="eva" title="אווה">👑</div>
+                            <div class="avatar-option" data-avatar="naked_frog" title="צפרדע">🐸</div>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn-auth">הירשם</button>
+                </form>
+                <div class="auth-toggle">
+                    <p>כבר יש לך חשבון? <a href="{% url 'login' %}">התחבר כאן</a></p>
+                </div>
+                <a href="/" class="back-home">← חזרה לדף הבית</a>
+            </div>
+        </div>
+    </div>
+    <script>
+        document.querySelectorAll('.avatar-option').forEach(el => {
+            el.addEventListener('click', function() {
+                document.querySelectorAll('.avatar-option').forEach(x => x.classList.remove('selected'));
+                this.classList.add('selected');
+                document.getElementById('id_avatar').value = this.dataset.avatar;
+            });
+        });
+    </script>
+</body>
+</html>

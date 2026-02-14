@@ -3,12 +3,33 @@
 
 class EuropeTimelineMap {
   constructor(containerId, dataArray) {
-    // Check if user is logged in
+    // Support both old localStorage users and Django session users.
+    // Map must remain accessible to all visitors (also guests).
+    const djangoUser = (typeof window.__USER__ !== 'undefined' && window.__USER__ && window.__USER__.isAuthenticated)
+      ? window.__USER__
+      : null;
     this.user = userSystem ? userSystem.getCurrentUser() : null;
+    if (!this.user && djangoUser) {
+      this.user = {
+        username: djangoUser.username || 'תלמיד',
+        avatar: djangoUser.avatar || 'churchill',
+        points: 0,
+        achievements: [],
+        completedStations: [],
+        completedSuperStations: [],
+        correctAnswers: 0
+      };
+    }
     if (!this.user) {
-      // Redirect to auth if no user logged in
-      window.location.href = 'auth.html';
-      return;
+      this.user = {
+        username: 'אורח',
+        avatar: 'churchill',
+        points: 0,
+        achievements: [],
+        completedStations: [],
+        completedSuperStations: [],
+        correctAnswers: 0
+      };
     }
 
     this.container = document.getElementById(containerId);
@@ -25,7 +46,59 @@ class EuropeTimelineMap {
     // Adjust viewBox to match typical map proportions
     this.mapViewBox = { x: 0, y: 0, width: 100, height: 80 };
     this.mapScale = 1;
-    this.init();
+    this.isDjangoAuthenticated = !!(typeof window.__USER__ !== 'undefined' && window.__USER__ && window.__USER__.isAuthenticated);
+    if (this.isDjangoAuthenticated) {
+      this.loadProgressFromServer().finally(() => this.init());
+    } else {
+      this.init();
+    }
+  }
+
+  getCsrfToken() {
+    if (typeof window.__CSRF__ !== 'undefined' && window.__CSRF__) return window.__CSRF__;
+    const match = document.cookie.match(/(?:^|;\s*)csrftoken=([^;]+)/);
+    return match ? decodeURIComponent(match[1]) : '';
+  }
+
+  async loadProgressFromServer() {
+    try {
+      const response = await fetch('/api/map-progress/', { credentials: 'same-origin' });
+      if (!response.ok) return;
+      const payload = await response.json();
+      if (!payload.ok || !payload.progress) return;
+      const p = payload.progress;
+      this.currentStation = parseInt(p.current_station || 1, 10);
+      this.completedStations = new Set((p.completed_stations || []).map(Number));
+      this.completedSuperStations = new Set((p.completed_super_stations || []).map(Number));
+      this.points = parseInt(p.points || 0, 10);
+      this.correctAnswers = parseInt(p.correct_answers || 0, 10);
+      this.achievements = new Set(p.achievements || []);
+    } catch (e) {
+      // Silent fallback to local state
+    }
+  }
+
+  syncProgressToServer() {
+    if (!this.isDjangoAuthenticated) return;
+    const csrf = this.getCsrfToken();
+    if (!csrf) return;
+    fetch('/api/map-progress/', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRFToken': csrf,
+        'X-Requested-With': 'XMLHttpRequest'
+      },
+      credentials: 'same-origin',
+      body: JSON.stringify({
+        current_station: this.currentStation,
+        completed_stations: Array.from(this.completedStations),
+        completed_super_stations: Array.from(this.completedSuperStations),
+        points: this.points,
+        correct_answers: this.correctAnswers,
+        achievements: Array.from(this.achievements)
+      })
+    }).catch(() => {});
   }
 
   init() {
@@ -190,8 +263,8 @@ class EuropeTimelineMap {
     image.setAttribute('width', '100');
     image.setAttribute('height', '80');
     // Use both xlink:href (for better compatibility) and href
-    image.setAttribute('href', 'images/Nazi_Germany.svg.png');
-    image.setAttributeNS('http://www.w3.org/1999/xlink', 'href', 'images/Nazi_Germany.svg.png');
+    image.setAttribute('href', '/images/Nazi_Germany.svg.png');
+    image.setAttributeNS('http://www.w3.org/1999/xlink', 'href', '/images/Nazi_Germany.svg.png');
     image.setAttribute('preserveAspectRatio', 'xMidYMid slice');
     svg.appendChild(image);
 
@@ -649,6 +722,7 @@ class EuropeTimelineMap {
         this.user.correctAnswers = this.correctAnswers;
         userSystem.updateUser({ correctAnswers: this.correctAnswers });
       }
+      this.syncProgressToServer();
       
       // Play epic sound
       soundEffects.playEpicUnlock();
@@ -764,6 +838,7 @@ class EuropeTimelineMap {
         this.user.correctAnswers = this.correctAnswers;
         userSystem.updateUser({ correctAnswers: this.correctAnswers });
       }
+      this.syncProgressToServer();
       
       quizFeedback.innerHTML = `כל הכבוד! תשובה נכונה ✓<br><span class="points-animation">+${pointsAwarded} נקודות!</span>`;
       quizFeedback.className = 'quiz-feedback success';
@@ -830,6 +905,7 @@ class EuropeTimelineMap {
       this.currentStation = nextStation.id;
       localStorage.setItem('currentStation', this.currentStation.toString());
     }
+    this.syncProgressToServer();
 
     this.updateProgress();
     this.renderStations();
@@ -936,9 +1012,17 @@ class EuropeTimelineMap {
   resetProgress() {
     if (confirm('האם אתם בטוחים שברצונכם לאפס את ההתקדמות?')) {
       this.completedStations.clear();
+      this.completedSuperStations.clear();
+      this.achievements.clear();
+      this.points = 0;
+      this.correctAnswers = 0;
       this.currentStation = 1;
       localStorage.removeItem('completedStations');
       localStorage.removeItem('currentStation');
+      localStorage.removeItem('mapPoints');
+      localStorage.removeItem('mapAchievements');
+      localStorage.removeItem('correctAnswers');
+      this.syncProgressToServer();
       this.init();
     }
   }
@@ -951,6 +1035,7 @@ class EuropeTimelineMap {
     if (this.user && userSystem) {
       userSystem.addPoints(amount);
     }
+    this.syncProgressToServer();
     
     this.updateStatsDisplay();
     this.checkAchievements();
@@ -979,6 +1064,7 @@ class EuropeTimelineMap {
         if (this.user && userSystem) {
           userSystem.addAchievement(ach.id);
         }
+        this.syncProgressToServer();
         
         this.showAchievementBadge(ach.name);
       }
